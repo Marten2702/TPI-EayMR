@@ -5,26 +5,25 @@ Genera los datasets oficiales de trabajo: data/processed/train.csv y data/proces
 """
 
 import json
-import numpy as np
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from src.config import (
-    DATA_RAW_PATH,
-    DATA_PROCESSED_DIR,
-    TRAIN_PATH,
-    TEST_PATH,
-    METADATA_PATH,
-    RANDOM_STATE,
-    TEST_SIZE,
-    TARGET_BINARY,
-    TARGET_CONTINUOUS,
-    TREATMENT_VAR,
-    ORIGINAL_TREATMENT_COL,
     ANOVA_FACTOR,
     ANOVA_VARIABLE,
+    DATA_PROCESSED_DIR,
+    DATA_RAW_PATH,
+    METADATA_PATH,
     NUMERICAL_FEATURES,
-    CATEGORICAL_FEATURES
+    ORIGINAL_TREATMENT_COL,
+    RANDOM_STATE,
+    TARGET_BINARY,
+    TARGET_CONTINUOUS,
+    TEST_PATH,
+    TEST_SIZE,
+    TRAIN_PATH,
+    TREATMENT_VAR,
 )
 
 

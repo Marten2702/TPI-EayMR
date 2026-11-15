@@ -14,6 +14,17 @@ TRAIN_PATH = DATA_PROCESSED_DIR / "train.csv"
 TEST_PATH = DATA_PROCESSED_DIR / "test.csv"
 METADATA_PATH = DATA_PROCESSED_DIR / "metadata.json"
 
+# Rutas de Artefactos Serializados (Contrato para Fase 5 - Web App)
+ARTIFACTS_DIR = BASE_DIR / "artifacts"
+PCA_PIPELINE_PATH = ARTIFACTS_DIR / "pca_pipeline.joblib"
+PHASE1_2_SUMMARY_PATH = ARTIFACTS_DIR / "phase1_2_summary.json"
+BEST_CLASSIFIER_PATH = ARTIFACTS_DIR / "best_classifier.joblib"
+ML_METRICS_PATH = ARTIFACTS_DIR / "ml_metrics.json"
+CAUSAL_DAG_PATH = ARTIFACTS_DIR / "causal_dag.dot"
+CAUSAL_ARTIFACTS_PATH = ARTIFACTS_DIR / "causal_artifacts.joblib"
+CAUSAL_CATE_PATH = ARTIFACTS_DIR / "causal_cate_model.joblib"
+CAUSAL_SUMMARY_PATH = ARTIFACTS_DIR / "causal_summary.json"
+
 # Hiperparámetros de Partición
 RANDOM_STATE = 42
 TEST_SIZE = 0.20
@@ -56,8 +67,8 @@ NUMERICAL_FEATURES = [
 CATEGORICAL_FEATURES = ["JOB"]
 
 # 7. Confusores Basales en Inferencia Causal (Z)
+# NOTA: LOAN queda EXCLUIDO explícitamente por actuar como Mediador Post-Tratamiento (T -> LOAN -> BAD)
 CAUSAL_CONFOUNDERS = [
-    "LOAN",
     "MORTDUE",
     "VALUE",
     "YOJ",
@@ -68,3 +79,6 @@ CAUSAL_CONFOUNDERS = [
     "CLNO",
     "DEBTINC"
 ]
+
+# 8. Mediador Causal Post-Tratamiento (M) - ¡NO CONDICIONAR EN BACKDOOR NI EN DML!
+CAUSAL_MEDIATOR = "LOAN"
