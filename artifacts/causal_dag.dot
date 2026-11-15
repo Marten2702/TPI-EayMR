@@ -1,0 +1,24 @@
+digraph {
+    TREATMENT [label="TREATMENT (T) - 1:DebtCon / 0:HomeImp", fillcolor=lightblue, style=filled];
+    BAD [label="BAD (Y) - 1:Default / 0:Paid", fillcolor=salmon, style=filled];
+    LOAN [label="LOAN (M) - Monto Crédito [Mediador]", fillcolor=lightyellow, style=filled];
+    COLLIDER_AUDIT [label="COLLIDER (C) - Auditoria Post-Credito", fillcolor=lightgray, style=dashed];
+
+    DEBTINC -> TREATMENT; DEBTINC -> BAD;
+    DELINQ -> TREATMENT; DELINQ -> BAD;
+    DEROG -> TREATMENT; DEROG -> BAD;
+    CLAGE -> TREATMENT; CLAGE -> BAD;
+    NINQ -> TREATMENT; NINQ -> BAD;
+    CLNO -> TREATMENT; CLNO -> BAD;
+    MORTDUE -> TREATMENT; MORTDUE -> BAD;
+    VALUE -> TREATMENT; VALUE -> BAD;
+    YOJ -> TREATMENT; YOJ -> BAD;
+    JOB -> TREATMENT; JOB -> BAD;
+
+    TREATMENT -> BAD;
+    TREATMENT -> LOAN;
+    LOAN -> BAD;
+
+    TREATMENT -> COLLIDER_AUDIT;
+    BAD -> COLLIDER_AUDIT;
+}

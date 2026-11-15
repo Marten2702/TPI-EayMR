@@ -1,0 +1,101 @@
+{
+    "dag_metadata": {
+        "treatment": "TREATMENT",
+        "outcome": "BAD",
+        "mediator": "LOAN",
+        "backdoor_adjustment_set": [
+            "CLAGE",
+            "CLNO",
+            "DEBTINC",
+            "DELINQ",
+            "DEROG",
+            "JOB",
+            "MORTDUE",
+            "NINQ",
+            "VALUE",
+            "YOJ"
+        ],
+        "mediator_in_backdoor": false
+    },
+    "sensitivity_e_value": {
+        "risk_control_homeimp": 0.22283737024221453,
+        "risk_treated_debtcon": 0.16741321619424604,
+        "causal_relative_risk": 1.3310619992131387,
+        "e_value_point": 1.9948873124817266,
+        "interpretation": "Un factor de confusión no observado U debería asociarse simultáneamente al tratamiento y al default con un Riesgo Relativo de al menos 1.99 veces para anular por completo el ATE protector estimado."
+    },
+    "ate_estimates": {
+        "backdoor_linear_regression": -0.055424154047968494,
+        "propensity_score_weighting_ipw": -0.0445405247748667,
+        "naive_observational_beta": -0.03355058119617154,
+        "confounding_bias": 0.021873572851796953,
+        "relative_bias_pct": 39.46577665915444
+    },
+    "dml_cate_summary": {
+        "heterogeneity_features": [
+            "DEBTINC",
+            "VALUE",
+            "CLAGE"
+        ],
+        "mean_cate": -0.018784933860698197,
+        "linear_coefficients": {
+            "DEBTINC": 0.0037999373195317303,
+            "VALUE": -2.068209988916915e-07,
+            "CLAGE": 0.00040279442821064657
+        },
+        "linear_intercept": -0.20299793918116796,
+        "cate_distribution": {
+            "mean": -0.018784933860698197,
+            "std": 0.04810626522809846,
+            "median": -0.012896440708203366,
+            "min": -0.38492350531017794,
+            "p10": -0.05826006483783559,
+            "p25": -0.031077115243401995,
+            "p75": -0.0004692937746783066,
+            "p90": 0.016514819575285056,
+            "max": 0.16154712232348967
+        },
+        "segmentation": {
+            "persuadibles_beneficiarios": {
+                "count": 1855,
+                "pct": 38.905201342281885,
+                "description": "Clientes donde Consolidación de Deuda reduce sensiblemente el riesgo de default (tau < -2%)."
+            },
+            "neutros_organicos": {
+                "count": 2507,
+                "pct": 52.57969798657718,
+                "description": "Clientes con respuesta indiferente a la modalidad del crédito (-2% <= tau <= +2%)."
+            },
+            "reactivos_adversos": {
+                "count": 406,
+                "pct": 8.515100671140939,
+                "description": "Clientes de alto riesgo donde consolidar deuda sin saneamiento agrava la morosidad (tau > +2%)."
+            }
+        },
+        "correlations": {
+            "DEBTINC": 0.34694394849231536,
+            "VALUE": 0.33349637087801887,
+            "CLAGE": 0.2787054448978638
+        }
+    },
+    "refutations": {
+        "random_common_cause": {
+            "new_effect": -0.0554394113513389,
+            "passed": true
+        },
+        "placebo_treatment": {
+            "new_effect": 0.0003931441401214079,
+            "passed": true
+        },
+        "data_subset": {
+            "new_effect": -0.07198400232218724,
+            "passed": true
+        },
+        "overall_passed": true
+    },
+    "mediator_audit": {
+        "ate_total": -0.05542415404783925,
+        "ate_direct_with_loan": -0.04400182820340548,
+        "attenuation_pct": 20.608931323651078
+    }
+}
