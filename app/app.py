@@ -472,13 +472,25 @@ with tab_if:
                 "**consolidación de deuda** en lugar de **mejoras del hogar**. **Resultado:** probabilidad de default.")
 
     # ---- semáforo: se arma con los valores de las tres refutaciones
+    # IC 95 % del ATE original: misma regresión backdoor (BAD ~ T + confusores) por MCO
+    confusores_num = [c for c in causal["dag_metadata"]["backdoor_adjustment_set"] if c != "JOB"]
+    X_ate = np.column_stack([np.ones(len(train)), train["TREATMENT"], train[confusores_num],
+                             pd.get_dummies(train["JOB"], drop_first=True).astype(float)])
+    y_ate = train["BAD"].to_numpy(dtype=float)
+    beta = np.linalg.lstsq(X_ate, y_ate, rcond=None)[0]
+    resid = y_ate - X_ate @ beta
+    ee_ate = float(np.sqrt(resid @ resid / (len(y_ate) - X_ate.shape[1]) * np.linalg.inv(X_ate.T @ X_ate)[1, 1]))
+    ic_ate = (ate_reg - 1.96 * ee_ate, ate_reg + 1.96 * ee_ate)
+
     def luz(nombre):
+        """Verde: cumple el criterio de la prueba. Amarillo: pasa el criterio del equipo pero
+        queda fuera del umbral estricto. Rojo: no pasa."""
         nuevo, paso = ref_c[nombre]["new_effect"], ref_c[nombre]["passed"]
         if not paso:
             return "rojo"
         if nombre == "placebo_treatment":
             return "verde" if abs(nuevo) < 0.005 else "amarillo"
-        return "verde" if abs(nuevo - ate_reg) / abs(ate_reg) < 0.15 else "amarillo"
+        return "verde" if ic_ate[0] <= nuevo <= ic_ate[1] else "amarillo"
 
     PRUEBAS = {
         "random_common_cause": ("Causa común aleatoria",
@@ -527,8 +539,8 @@ with tab_if:
             if clave == "placebo_treatment":
                 st.caption("Verde: el efecto placebo queda a menos de 0,5 pp de cero.")
             else:
-                st.caption(f"Cambio relativo: {pct(abs(nuevo - ate_reg) / abs(ate_reg), 0)}. "
-                           "Verde: cambia menos de 15 %. Amarillo: mantiene el signo pero cambia más.")
+                st.caption(f"Verde: el efecto de la prueba queda dentro del intervalo de confianza al 95 % "
+                           f"del efecto original ({pp(ic_ate[0], 2)} a {pp(ic_ate[1], 2)}).")
 
     st.divider()
     col_dag, col_cate = st.columns([1, 1], gap="large")
