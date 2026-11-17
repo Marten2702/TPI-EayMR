@@ -7,7 +7,7 @@
 
 Trabajo Práctico Integrador de **Estadística Aplicada y Modelos de Regresión (EAyMR 2026)** — Pontificia Universidad Católica Argentina (UCA).
 
-**🌐 Web App en producción:** [(https://tpi-eaymr-jjrvx4y6okxz4c7zwdpvbp.streamlit.app/)]
+**🌐 Web App en producción:** [https://tpi-eaymr-jjrvx4y6okxz4c7zwdpvbp.streamlit.app/](https://tpi-eaymr-jjrvx4y6okxz4c7zwdpvbp.streamlit.app/)
 
 ---
 
@@ -80,6 +80,7 @@ Dataset **HMEQ** (Home Equity): 5.960 préstamos con garantía hipotecaria, 12 v
 │   └── processed/            # train.csv, test.csv y metadata.json
 ├── notebooks/
 │   └── TP_Integrador_Final.ipynb   # Notebook maestro (Fases 1 a 4 y ensayo)
+├── Presentacion_Defensa.pdf      # Diapositivas de la defensa oral
 ├── src/
 │   ├── config.py             # Contrato de variables del equipo
 │   ├── data_pipeline.py      # Limpieza, imputación y partición
@@ -97,9 +98,9 @@ Dataset **HMEQ** (Home Equity): 5.960 préstamos con garantía hipotecaria, 12 v
 ## Cómo reproducir el trabajo
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/Marten2702/TPI-EayMR.git
 cd TPI-EayMR
-pip install -r requirements.txt
+pip install -r requirements.txt   # Python 3.13
 
 # 1. Partición e imputación (genera data/processed/)
 python -m src.data_pipeline
@@ -117,9 +118,11 @@ python -m pytest tests/ -v
 jupyter notebook notebooks/TP_Integrador_Final.ipynb
 ```
 
+> El notebook entregado tiene celdas de interpretación escritas a mano. No regenerarlo con `python -m src.build_notebook`, porque esas celdas se perderían.
+
 ## Web App
 
-Publicada en Streamlit Community Cloud: **[LINK DE LA APP]**
+Publicada en Streamlit Community Cloud: **[https://tpi-eaymr-jjrvx4y6okxz4c7zwdpvbp.streamlit.app/](https://tpi-eaymr-jjrvx4y6okxz4c7zwdpvbp.streamlit.app/)**
 
 Para correrla en la computadora:
 

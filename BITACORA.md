@@ -151,13 +151,13 @@ flowchart LR
 
 ---
 
-## Entrada 5 — Trazabilidad de Asistentes de IA y Quality Gate (`pytest` + `ruff`)
+## Entrada 5 — Trazabilidad de Asistentes de IA y Quality Gate (`pytest`)
 *Responsable: Equipo EAyMR 2026 (Auditoría Transversal QA)*  
 *Fecha: Noviembre 2026*
 
 ### 5.1 Protocolo de Gobernanza con LLMs
 1. **No Delegación Teórica:** Las variables del contrato (`src/config.py`), los tests de supuestos, el DAG causal y la separación entre Nivel 1 (predictivo) y Nivel 2 (intervención) fueron definidos por el equipo; los LLMs actuaron como asistentes de estructuración y refactorización modular.
-2. **Validación Determinística:** Ningún bloque de código integró el repositorio sin ejecución limpia y validación por suite automatizada `pytest` y linter `ruff`.
+2. **Validación Determinística:** Ningún bloque de código integró el repositorio sin ejecución limpia y validación por la suite automatizada `pytest`.
 
 ### 5.2 Matriz de Errores de IA Detectados y Refutados
 | Propuesta / Sesgo de LLM | Falacia Metodológica | Refutación y Corrección del Equipo |
@@ -172,6 +172,8 @@ La suite unificada en `tests/` valida de punta a punta:
 - `test_data_pipeline.py`: Contrato de variables, partición 80/20 y cero fuga de datos en imputación.
 - `test_phase1.py`: Mecanismo MAR/MNAR, contrastes con Cohen's $d$, Levene y Welch ANOVA.
 - `test_phase2.py`: Auditoría Gauss-Markov, Distancia de Cook, Huber vs OLS, VIF y ajuste PCA en Train-only.
-- `test_phase3.py`: Torneo ML de 4 familias, poda CART, calibración isotónica NB, ranking MDI/Permutation y contrato `best_classifier.joblib`.
-- `test_phase4.py`: DAG acíclico sin `LOAN` ni colisionador en Backdoor, DoWhy OLS/IPW, sesgo de confusión, EconML DML CATE, 3 refutaciones y auditoría de mediación.
-- `test_artifacts.py`: Integridad contractual de todos los archivos en `artifacts/` consumibles por la Web App de Fase 5.
+- `test_phase3.py`: Matrices sin fuga, poda CART (menos hojas y mejor AUC en test) y calibración isotónica de Naive Bayes.
+- `test_phase4.py`: DAG acíclico, `LOAN` como mediador fuera del ajuste backdoor, confusores y coherencia del ATE con las 3 refutaciones.
+- `test_artifacts.py`: Integridad de los archivos de `artifacts/` que consume la Web App de Fase 5.
+
+Resultado: **26 tests aprobados** (`python -m pytest tests/`).
