@@ -7,7 +7,7 @@
 
 Trabajo Práctico Integrador de **Estadística Aplicada y Modelos de Regresión (EAyMR 2026)** — Pontificia Universidad Católica Argentina (UCA).
 
-**🌐 Web App en producción:** [LINK DE LA APP]
+**🌐 Web App en producción:** [(https://tpi-eaymr-jjrvx4y6okxz4c7zwdpvbp.streamlit.app/)]
 
 ---
 
