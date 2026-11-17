@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Defensa Ejecutiva — Decision Intelligence Capstone (EAyMR 2026 - UCA)</title>
+  <style>
+    :root {
+      --bg-dark: #0b1020;
+      --bg-card: #131b33;
+      --bg-card-alt: #182342;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --border-subtle: rgba(148, 163, 184, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 15% 15%, #172554 0%, #0b1020 55%, #060913 100%);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .topbar {
+      height: 52px;
+      background: rgba(11, 16, 32, 0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      letter-spacing: 0.3px;
+      color: var(--accent-blue);
+    }
+
+    .brand span.uni {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.82rem;
+      border-left: 1px solid var(--border-subtle);
+      padding-left: 12px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--bg-card-alt);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 13px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-indigo);
+      border-color: var(--accent-blue);
+    }
+
+    .btn-accent {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .slide-counter {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 68px;
+      text-align: center;
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-emerald));
+      width: 8.33%;
+      transition: width 0.25s ease;
+    }
+
+    /* Deck Stage */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 36px;
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1320px;
+      height: 100%;
+      max-height: 760px;
+      background: rgba(19, 27, 51, 0.78);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 34px 44px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: flex;
+      animation: fadeIn 0.22s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Header */
+    .slide-header {
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .phase-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+
+    .tag-green {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .tag-amber {
+      background: rgba(245, 158, 11, 0.16);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .tag-rose {
+      background: rgba(244, 63, 94, 0.16);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.4);
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    h2 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--accent-blue);
+    }
+
+    p, li {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    strong {
+      color: #ffffff;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .card-highlight {
+      border-left: 4px solid var(--accent-blue);
+    }
+
+    .card-emerald {
+      border-left: 4px solid var(--accent-emerald);
+    }
+
+    .card-amber {
+      border-left: 4px solid var(--accent-amber);
+    }
+
+    .card-rose {
+      border-left: 4px solid var(--accent-rose);
+    }
+
+    /* KPI Metrics */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-box {
+      background: rgba(24, 35, 66, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 16px;
+      text-align: center;
+    }
+
+    .kpi-val {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      line-height: 1.15;
+    }
+
+    .kpi-lbl {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      margin-top: 6px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    tr.winner-row {
+      background: rgba(16, 185, 129, 0.15);
+      font-weight: 700;
+    }
+
+    /* Formula Block */
+    .formula {
+      background: rgba(6, 9, 19, 0.75);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'Cambria Math', 'Times New Roman', serif;
+      font-size: 1.02rem;
+      color: #e0f2fe;
+      text-align: center;
+      margin: 8px 0;
+    }
+
+    /* Horizontal Bar Chart */
+    .bar-row {
+      margin-bottom: 8px;
+    }
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 3px;
+    }
+    .bar-bg {
+      height: 10px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 10px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    /* Speaker Notes / Defense Q&A Drawer */
+    .notes-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 12px 16px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 10px;
+      font-size: 0.83rem;
+      color: #fef3c7;
+    }
+
+    body.show-notes .notes-panel {
+      display: block;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+    .b-pass { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .b-warn { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .b-fail { background: rgba(244, 63, 94, 0.2); color: #fda4af; }
+
+    /* Print to PDF Styles (12 landscape pages) */
+    @media print {
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+      body {
+        height: auto;
+        overflow: visible;
+        background: #0b1020 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .topbar, .progress-track {
+        display: none !important;
+      }
+      .deck-container {
+        display: block;
+        padding: 0;
+      }
+      .slide {
+        display: flex !important;
+        width: 16in;
+        height: 9in;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+        page-break-after: always;
+        break-after: page;
+        background: #0f172a !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Controls -->
+  <header class="topbar">
+    <div class="brand">
+      <span>🏆 DECISION INTELLIGENCE CAPSTONE</span>
+      <span class="uni">EAyMR 2026 — UCA | Prof. Ivan Gonzalo Vilaboa</span>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="prevSlide()" title="Flecha Izquierda">◀ Anterior</button>
+      <span class="slide-counter" id="slideCounter">1 / 12</span>
+      <button class="btn" onclick="nextSlide()" title="Flecha Derecha / Espacio">Siguiente ▶</button>
+      <button class="btn btn-accent" onclick="toggleNotes()" title="Tecla N">💡 Guion & Defensa Oral (N)</button>
+      <button class="btn" onclick="window.print()" title="Guardar como PDF en horizontal">🖨 Exportar PDF</button>
+    </div>
+  </header>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progressBar"></div>
+  </div>
+
+  <main class="deck-container">
+
+    <!-- ==================== SLIDE 1: PORTADA ==================== -->
+    <section class="slide active">
+      <div>
+        <span class="phase-tag">Trabajo Práctico Integrador — Defensa Ejecutiva</span>
+        <h1 style="margin-top:10px; background: linear-gradient(90deg, #ffffff, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          Modelado Predictivo, Inferencia Causal y Sistemas de Decisión en Riesgo Crediticio
+        </h1>
+        <p style="font-size:1.08rem; color:#94a3b8; margin-top:8px;">
+          Del Scoring Observacional Pasivo ($P(Y \mid X)$) a la Prescripción Óptima de Políticas de Consolidación ($P(Y \mid do(T))$) sobre el Dataset HMEQ ($N = 5.960$)
+        </p>
+      </div>
+
+      <div class="kpi-row" style="margin-top:18px;">
+        <div class="kpi-box">
+          <div class="kpi-val">5.960</div>
+          <div class="kpi-lbl">Préstamos Hipotecarios (HMEQ)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-emerald);">0.9516</div>
+          <div class="kpi-lbl">AUC-ROC Test (Random Forest)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-amber);">-5.54 p.p.</div>
+          <div class="kpi-lbl">ATE Causal Consolidación (DoWhy)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:#a5b4fc;">34 / 34</div>
+          <div class="kpi-lbl">Tests Unitarios Pytest Aprobados</div>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="card card-highlight">
+          <h3>👑 Project Lead & Fases 1–2</h3>
+          <p><strong>German Sittner</strong></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Arquitectura Scrum, Contrato Anti-Leakage, Inferencia Clásica, Welch ANOVA, Gauss-Markov y PCA.</p>
+        </div>
+        <div class="card card-emerald">
+          <h3>⚙ ML Engineer & Fase 3</h3>
+          <p><strong>Martín Peña</strong></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Torneo de 4 familias, Calibración Isotónica, Poda CART, Random Forest OOB y Ablación.</p>
+        </div>
+        <div class="card card-amber">
+          <h3>🧠 Causal ML & Fase 4</h3>
+          <p><strong>Santiago Salvatore</strong></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">SCM/DAG de Pearl, DoWhy Backdoor & IPW, EconML Double ML (CATE) y Ensayo Crítico.</p>
+        </div>
+        <div class="card card-rose">
+          <h3>🔍 QA & Producto (Fase 5)</h3>
+          <p><strong>Equipo EAyMR 2026</strong></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Suite determinística <code>pytest</code>, contrato de artefactos serializados y Simulador Web.</p>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>🎯 Guion de Apertura (1 min):</strong> Presentamos un sistema integral de Decision Intelligence bancario. Demostraremos por qué un banco que solo usa Machine Learning predictivo toma decisiones subóptimas de producto, y cómo articulamos Estadística Clásica, Econometría, ML Calibrado e Inferencia Causal bajo normas de ingeniería de software de producción.
+      </div>
+
+      <div class="slide-footer">
+        <span>Pontificia Universidad Católica Argentina (UCA) — Facultad de Ingeniería y Ciencias Agrarias</span>
+        <span>Slide 1 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 2: PROBLEMA & CONTRATO ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag">Marco Estratégico & Gobernanza (Entrada 1 Bitácora)</span>
+          <h2>Dos Preguntas Epistemológicamente Disjuntas y Contrato de Datos</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. La Dicotomía de Decisión Bancaria</h3>
+          <p style="margin-bottom:10px;">En originación hipotecaria existen dos problemas que operan en niveles distintos de la <strong>Escalera de Causalidad de Judea Pearl</strong>:</p>
+          <div class="formula">
+            Nivel 1 (Predicción Pasiva): &nbsp; P(BAD = 1 | X = x)
+          </div>
+          <p style="font-size:0.84rem; margin-bottom:10px;"><em>"Dado el perfil patrimonial y de buró del solicitante, ¿cuál es su probabilidad calibrada de incumplimiento?"</em> → Alimenta el <strong>Scoring y Provisiones</strong>.</p>
+          <div class="formula" style="border-color:var(--accent-emerald);">
+            Nivel 2 (Intervención Activa): &nbsp; P(BAD = 1 | do(TREATMENT = 1), Z)
+          </div>
+          <p style="font-size:0.84rem;"><em>"Si el banco interviene direccionando el crédito hacia Consolidación de Pasivos (DebtCon) en vez de Mejoras del Hogar (HomeImp), ¿en cuánto cae el riesgo de default?"</em> → Alimenta la <strong>Política Comercial</strong>.</p>
+        </div>
+
+        <div class="card">
+          <h3>2. Contrato Formal Único (<code>src/config.py</code>)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Rol Metodológico</th>
+                <th>Variable</th>
+                <th>Definición Operativa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Target Primario ($Y$)</strong></td>
+                <td><code>BAD</code></td>
+                <td>Binaria: $1$ = Default ($19.95\%$), $0$ = Cumplidor</td>
+              </tr>
+              <tr>
+                <td><strong>Target Continuo ($Y_c$)</strong></td>
+                <td><code>LOAN</code></td>
+                <td>Monto solicitado en USD ( Fase 2 MCO y ANOVA )</td>
+              </tr>
+              <tr>
+                <td><strong>Tratamiento ($T$)</strong></td>
+                <td><code>TREATMENT</code></td>
+                <td>$1$ = <code>DebtCon</code> ($69.2\%$), $0$ = <code>HomeImp</code> ($30.8\%$)</td>
+              </tr>
+              <tr>
+                <td><strong>Mediador ($M$)</strong></td>
+                <td><code>LOAN</code></td>
+                <td>Descendiente de $T$ ($T \to \text{LOAN} \to \text{BAD}$). <strong>Prohibido en Backdoor</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Factor ANOVA ($k=6$)</strong></td>
+                <td><code>JOB</code></td>
+                <td><em>Mgr, Office, Other, ProfExe, Sales, Self</em></td>
+              </tr>
+              <tr>
+                <td><strong>Confusores ($Z$)</strong></td>
+                <td>10 basales</td>
+                <td><code>MORTDUE, VALUE, YOJ, DEROG, DELINQ, CLAGE, NINQ, CLNO, DEBTINC, JOB</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>❓ Posible pregunta del jurado:</strong> ¿Por qué <code>LOAN</code> es target en Fase 2 pero mediador excluido en Fase 4? <br/>
+        <strong>Respuesta:</strong> En Fase 2 estudiamos determinantes del monto otorgado; en Fase 4 evaluamos la política de consolidación $T$, y dado que consolidar deuda exige pedir préstamos mayores ($T \to \text{LOAN}$), condicionar en <code>LOAN</code> bloquearía el camino causal indirecto.
+      </div>
+
+      <div class="slide-footer">
+        <span>Dataset HMEQ ($N=5.960$, 13 variables reales — Cero Toy Datasets)</span>
+        <span>Slide 2 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 3: ANTI-LEAKAGE & MAR/MNAR ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-green">Fase 1 — Gobernanza e Inferencia sobre Datos Faltantes</span>
+          <h2>Blindaje Anti-Data Leakage y Demostración Matemática MAR / MNAR</h2>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-val">4.768 / 1.192</div>
+          <div class="kpi-lbl">Split 80/20 Estratificado Congelado</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-rose);">21.26%</div>
+          <div class="kpi-lbl">Nulos en DEBTINC (1.267 casos)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-amber);">z = 34.74</div>
+          <div class="kpi-lbl">Estadístico Wald sobre BAD (p &lt; 10⁻¹⁶)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-emerald);">16.3x</div>
+          <div class="kpi-lbl">Odds Ratio de Omisión si BAD = 1</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-rose">
+          <h3>1. Auditoría Logit del Mecanismo de Omisión</h3>
+          <p>Para testear la hipótesis nula de pérdida completamente aleatoria ($\text{MCAR}$), ajustamos sobre el dataset crudo:</p>
+          <div class="formula">
+            logit(P(DEBTINC_missing = 1)) = β₀ + β₁ LOAN + β₂ VALUE + β₃ BAD
+          </div>
+          <ul>
+            <li>El coeficiente de <code>BAD</code> resultó $\hat{\beta}_3 = +2.790$ ($z = 34.74, p < 10^{-16}$), equivalente a un <strong>Odds Ratio de $16.29\times$</strong>.</li>
+            <li><strong>Rechazo categórico de MCAR:</strong> La ausencia de <code>DEBTINC</code> es <strong>MAR / MNAR</strong> (solicitantes con fragilidad financiera o sin ingresos declarables omiten o no certifican su ratio deuda/ingreso).</li>
+            <li><strong>Peligro de <code>dropna()</code>:</strong> Eliminar el $21.26\%$ de filas borraría selectivamente a los morosos, induciendo un grave <strong>sesgo de selección</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="card card-emerald">
+          <h3>2. Protocolo de Imputación libre de Fuga (<code>src/data_pipeline.py</code>)</h3>
+          <ul>
+            <li><strong>Paso 1 (Señal estructural):</strong> Creación del indicador binario <code>DEBTINC_is_missing</code> antes de imputar.</li>
+            <li><strong>Paso 2 (Partición previa):</strong> División estratificada por <code>BAD</code> ($19.95\%$ en Train y $19.97\%$ en Test) <strong>antes</strong> de calcular estadísticos.</li>
+            <li><strong>Paso 3 (Fit en Train, Transform en Test):</strong> Las medianas numéricas (ej. mediana de <code>DEBTINC</code> $= 34.78\%$) y moda ocupacional se aprenden <strong>exclusivamente en <code>train.csv</code></strong> y se inyectan ciegamente en <code>test.csv</code>.</li>
+            <li>Verificado mediante 5 tests automáticos en <code>tests/test_data_pipeline.py</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>💡 Conexión clave con Fase 3:</strong> Esta decisión tomada en Fase 1 explica por qué en Fase 3 <code>DEBTINC_is_missing</code> termina siendo la variable #1 en importancia de Gini (MDI = 20.17%) del Random Forest.
+      </div>
+
+      <div class="slide-footer">
+        <span>Módulos: src/data_pipeline.py &amp; src/phase1_inference.py</span>
+        <span>Slide 3 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 4: CONTRASTES Y WELCH ANOVA ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-green">Fase 1 — Unidades 1 y 2: Inferencia Clásica y ANOVA</span>
+          <h2>Contrastes de Hipótesis, Sesgo de Shapiro-Wilk y Welch's ANOVA</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. Contrastes Formales Bivariados ($\alpha = 0.05$)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Contraste</th>
+                <th>Hipótesis</th>
+                <th>Estadísticos</th>
+                <th>IC 95% / Magnitud</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. <code>LOAN</code> según <code>BAD</code></strong></td>
+                <td>$H_0: \mu_0 = \mu_1$<br/>$H_1: \mu_0 \neq \mu_1$</td>
+                <td>Welch $t = 5.720$<br/>$p = 1.25 \times 10^{-8}$<br/>MWU $p = 5.9 \times 10^{-17}$</td>
+                <td>$[-\$2.828, -\$1.384]$<br/><strong>Cohen's $d = -0.188$</strong></td>
+              </tr>
+              <tr>
+                <td><strong>2. <code>DEBTINC</code> según <code>REASON</code></strong></td>
+                <td>$H_0: \mu_{\text{DC}} = \mu_{\text{HI}}$<br/>$H_1: \mu_{\text{DC}} > \mu_{\text{HI}}$</td>
+                <td>Welch $t = 3.795$<br/>$p = 7.56 \times 10^{-5}$<br/>MWU $p = 4.0 \times 10^{-6}$</td>
+                <td>$[+0.50\%, +1.56\%]$<br/><strong>Cohen's $d = +0.125$</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="margin-top:10px; font-size:0.84rem;">
+            <strong>Hallazgo económico clave:</strong> El Contraste 2 demuestra que quienes piden consolidación (<code>DebtCon</code>) ya ingresan con mayor asfixia financiera ($34.31\%$ vs $33.28\%$), anticipando el <strong>sesgo de confusión</strong> que resolveremos en Fase 4.
+          </p>
+        </div>
+
+        <div class="card card-amber">
+          <h3>2. Diagnóstico ANOVA sobre <code>LOAN</code> por Ocupación (<code>JOB</code>, $k=6$)</h3>
+          <ul>
+            <li><strong>Crítica a Shapiro-Wilk en $N = 4.768$:</strong> Rechaza normalidad en los 6 grupos ($p \le 0.0033$; en <code>Other</code> $p = 6.95 \times 10^{-46}$) por exceso de potencia ante desvíos mínimos. Evaluamos asimetría (<code>Mgr</code> $0.62$, <code>Sales</code> $0.51$, <code>Self</code> $0.81$ dentro de $[-1,1]$) + TCL.</li>
+            <li><strong>Violación de Homocedasticidad (Levene en mediana):</strong> $W = 20.822, p = 1.22 \times 10^{-20} \Rightarrow$ <strong>Se descarta ANOVA de Fisher</strong>.</li>
+            <li><strong>Remediación Paramétrica Robusta (Welch's ANOVA):</strong>
+              $$F^*(5,\; 592.31) = 15.662, \quad p = 1.71 \times 10^{-14}$$</li>
+            <li><strong>Validación No Paramétrica (Kruskal-Wallis):</strong> $H = 108.21, p = 9.77 \times 10^{-22}$.</li>
+            <li><strong>Post-Hoc con Control FWER (Tukey HSD + Welch-Bonferroni):</strong> <strong>8 de 15 pares significativos</strong> ($\alpha_{\text{adj}} = 0.05/15$). El segmento <code>Self</code> solicita montos mayores ($\$29.515$ vs <code>Sales</code> $\$15.242$ y <code>Other</code> $\$17.783$).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>❓ Pregunta clásica de examen oral:</strong> ¿Por qué usamos Welch's ANOVA en lugar de quedarnos solo con Kruskal-Wallis si falló Shapiro-Wilk? <br/>
+        <strong>Respuesta:</strong> Kruskal-Wallis contrasta dominancia estocástica/medianas de rango, mientras el banco necesita inferir sobre diferencias en el monto esperado en dólares ($\mu_j$). Con $N_j$ grande el TCL garantiza normalidad asintótica de las medias muestrales, y la corrección de grados de libertad de Welch-Satterthwaite resuelve exactamente la heterocedasticidad detectada por Levene.
+      </div>
+
+      <div class="slide-footer">
+        <span>Validado en tests/test_phase1.py (5/5 tests aprobados)</span>
+        <span>Slide 4 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 5: GAUSS-MARKOV & HUBER ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag">Fase 2 — Unidad 3: Econometría Clásica y Robustez</span>
+          <h2>Auditoría Gauss-Markov, Distancia de Cook y Regresión Robusta de Huber</h2>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-rose);">p = 3.6×10⁻⁶⁴</div>
+          <div class="kpi-lbl">Test de White (LM = 451.72)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-amber);">268 casos</div>
+          <div class="kpi-lbl">Influyentes Cook's D &gt; 4/n</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val">1.9738</div>
+          <div class="kpi-lbl">Durbin-Watson en Train (Indep.)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-emerald);">-$200.82</div>
+          <div class="kpi-lbl">Reducción de MAE en Test con Huber</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-rose">
+          <h3>1. Diagnóstico de Supuestos sobre MCO (<code>LOAN</code>, $R^2 = 0.1218$)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Supuesto Gauss-Markov</th>
+                <th>Prueba Formal</th>
+                <th>Resultado en Train</th>
+                <th>Veredicto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Homocedasticidad</td>
+                <td>Breusch-Pagan<br/>White Test</td>
+                <td>$LM = 118.26, p = 3.0 \times 10^{-21}$<br/>$LM = 451.72, p = 3.6 \times 10^{-64}$</td>
+                <td><span class="badge b-fail">Rechazado</span></td>
+              </tr>
+              <tr>
+                <td>Normalidad Residual</td>
+                <td>Jarque-Bera</td>
+                <td>$JB = 16.199, p < 10^{-50}$<br/>($\text{Skew}=2.11, \text{Kurt}=10.98$)</td>
+                <td><span class="badge b-fail">Colas Pesadas</span></td>
+              </tr>
+              <tr>
+                <td>No Autocorrelación</td>
+                <td>Durbin-Watson</td>
+                <td>$DW = 1.9738 \approx 2.0$</td>
+                <td><span class="badge b-pass">Cumple</span></td>
+              </tr>
+              <tr>
+                <td>Multicolinealidad</td>
+                <td>Factor VIF</td>
+                <td>Máx VIF base: <code>MORTDUE</code> $= 2.77$, <code>VALUE</code> $= 2.67$</td>
+                <td><span class="badge b-pass">Controlado (&lt; 5)</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.8rem; margin-top:8px; color:var(--text-muted);">
+            <strong>Autopsia #1 (Entrada 3 Bitácora):</strong> Incluir <code>NET_EQUITY = VALUE - MORTDUE</code> colapsó $X^T X$ ($\text{VIF} \to \infty$). Se descartó la feature redundante.
+          </p>
+        </div>
+
+        <div class="card card-emerald">
+          <h3>2. Descomposición de Influencia y Remediación Robusta</h3>
+          <ul>
+            <li><strong>Outliers de respuesta ($|r_i| > 3$):</strong> $98$ observaciones.</li>
+            <li><strong>Alto Apalancamiento ($h_{ii} > 2(p+1)/n = 0.00419$):</strong> $386$ observaciones.</li>
+            <li><strong>Distancia de Cook ($D_i > 4/n = 0.000839$):</strong> $268$ créditos influyentes (máx $D_i = 0.1687$). Son créditos hipotecarios reales sobre mansiones/inmuebles de alto valor, no errores de carga.</li>
+          </ul>
+          <table style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>Estimador (Evaluado en Test Ciego)</th>
+                <th>RMSE Test ($)</th>
+                <th>MAE Test ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MCO Clásico (Sensible a pérdidas $L_2$)</td>
+                <td>$\$10.506,96$</td>
+                <td>$\$6.986,27$</td>
+              </tr>
+              <tr class="winner-row">
+                <td><strong>Huber Regressor (Pérdida Híbrida $L_2/L_1$)</strong></td>
+                <td>$\$10.742,08$</td>
+                <td><strong>$\$6.785,45$</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>❓ Pregunta de defensa:</strong> ¿Por qué Huber mejora el MAE pero tiene un RMSE levemente mayor que MCO? <br/>
+        <strong>Respuesta:</strong> Porque el RMSE penaliza cuadráticamente los extremos, y MCO es por definición el minimizador empírico del error cuadrático. En cambio, Huber atenúa linealmente el peso de los 268 puntos con alta Distancia de Cook, logrando una predicción central mucho más precisa para el cliente típico ($\text{MAE}$ cae en más de $\$200$ por préstamo).
+      </div>
+
+      <div class="slide-footer">
+        <span>Módulo: src/phase2_econometrics.py — Autopsias documentadas en BITACORA.md</span>
+        <span>Slide 5 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 6: PCA SIN LEAKAGE ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag">Fase 2 — Reducción de Dimensionalidad Ortogonal</span>
+          <h2>Análisis de Componentes Principales (PCA) Libre de Fuga de Datos</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. Protocolo Anti-Leakage y Criterio de Kaiser ($\lambda_k > 1$)</h3>
+          <p style="margin-bottom:8px;">
+            <code>StandardScaler</code> y la descomposición espectral de la matriz de correlaciones $\mathbf{R}_{\text{train}}$ se ajustaron <strong>únicamente sobre <code>train.csv</code> ($N=4.768$)</strong>, proyectando ciegamente a <code>test.csv</code>:
+          </p>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>PC1 — Capacidad Patrimonial</strong> ($\lambda_1 = 2.085$)</span><span><strong>23.16%</strong></span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:75%; background:var(--accent-blue);"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>PC2 — Estrés Financiero y Buró</strong> ($\lambda_2 = 1.380$)</span><span><strong>15.32%</strong> (Acum: 38.48%)</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:50%; background:var(--accent-emerald);"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>PC3 — Trayectoria y Estabilidad</strong> ($\lambda_3 = 1.244$)</span><span><strong>13.82%</strong> (Acum: <strong>52.30%</strong>)</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:45%; background:var(--accent-amber);"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span style="color:var(--text-muted);">PC4 ($\lambda_4 = 0.990 &lt; 1.0$ — Descartado por Kaiser)</span><span style="color:var(--text-muted);">11.00%</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:35%; background:#475569;"></div></div>
+          </div>
+          <p style="font-size:0.82rem; margin-top:8px; color:var(--text-muted);">
+            Artefacto exportado: <code>artifacts/pca_pipeline.joblib</code> para proyectar nuevos clientes en el Tab 1 de la Web App.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>2. Interpretación Económica de Cargas Factoriales (Loadings)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Variable Original</th>
+                <th>PC1 (Patrimonio)</th>
+                <th>PC2 (Estrés Buró)</th>
+                <th>PC3 (Madurez)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>MORTDUE</code> (Deuda Hipot.)</td>
+                <td><strong>+0.874</strong></td>
+                <td>-0.048</td>
+                <td>-0.168</td>
+              </tr>
+              <tr>
+                <td><code>VALUE</code> (Tasación)</td>
+                <td><strong>+0.861</strong></td>
+                <td>-0.068</td>
+                <td>-0.145</td>
+              </tr>
+              <tr>
+                <td><code>CLNO</code> (N° Líneas)</td>
+                <td><strong>+0.595</strong></td>
+                <td>+0.138</td>
+                <td>+0.369</td>
+              </tr>
+              <tr>
+                <td><code>NINQ</code> (Consultas Rec.)</td>
+                <td>+0.095</td>
+                <td><strong>+0.622</strong></td>
+                <td>+0.116</td>
+              </tr>
+              <tr>
+                <td><code>DEROG</code> (Derogatorios)</td>
+                <td>+0.025</td>
+                <td><strong>+0.597</strong></td>
+                <td>+0.258</td>
+              </tr>
+              <tr>
+                <td><code>DEBTINC</code> (Deuda/Ingreso)</td>
+                <td>+0.193</td>
+                <td><strong>+0.392</strong></td>
+                <td>-0.145</td>
+              </tr>
+              <tr>
+                <td><code>DELINQ</code> (Moras Previas)</td>
+                <td>+0.039</td>
+                <td>+0.341</td>
+                <td><strong>+0.598</strong></td>
+              </tr>
+              <tr>
+                <td><code>YOJ</code> (Antigüedad Lab.)</td>
+                <td>+0.056</td>
+                <td>-0.364</td>
+                <td><strong>+0.588</strong></td>
+              </tr>
+              <tr>
+                <td><code>CLAGE</code> (Antig. Crediticia)</td>
+                <td>+0.303</td>
+                <td>-0.433</td>
+                <td><strong>+0.464</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>💡 Valor para el negocio:</strong> PC1 sintetiza la colinealidad estructural entre <code>MORTDUE</code> y <code>VALUE</code> ($\rho = 0.785$) en un único eje ortogonal de escala patrimonial, mientras que PC2 separa nítidamente a los clientes en default hacia el cuadrante superior de presión crediticia.
+      </div>
+
+      <div class="slide-footer">
+        <span>Validado en tests/test_phase2.py &amp; tests/test_artifacts.py</span>
+        <span>Slide 6 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 7: TORNEO ML Y CALIBRACIÓN ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-amber">Fase 3 — Unidades 4 y 5: Torneo Predictivo y Calibración</span>
+          <h2>Evaluación en Test Ciego ($N = 1.192$) y Calibración de Probabilidades</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. Tabla Oficial del Torneo en Test (<code>artifacts/ml_metrics.json</code>)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Familia de Modelo</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1 Macro</th>
+                <th>AUC-ROC</th>
+                <th>PR-AUC</th>
+                <th>Brier ↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Logística (Elastic Net)</td>
+                <td>0.7840</td>
+                <td>0.5336</td>
+                <td>0.7807</td>
+                <td>0.8775</td>
+                <td>0.7469</td>
+                <td>0.0910</td>
+              </tr>
+              <tr>
+                <td>Naive Bayes (Original)</td>
+                <td>0.7857</td>
+                <td>0.1849</td>
+                <td>0.6004</td>
+                <td>0.7645</td>
+                <td>0.5095</td>
+                <td>0.1399</td>
+              </tr>
+              <tr>
+                <td>Naive Bayes (Isotónico)</td>
+                <td>0.6915</td>
+                <td>0.2731</td>
+                <td>0.6466</td>
+                <td>0.7649</td>
+                <td>0.5180</td>
+                <td>0.1297</td>
+              </tr>
+              <tr>
+                <td>Árbol CART (Sin Poda, 443 h.)</td>
+                <td>0.7136</td>
+                <td>0.6387</td>
+                <td>0.7990</td>
+                <td>0.7874</td>
+                <td>0.5279</td>
+                <td>0.1233</td>
+              </tr>
+              <tr>
+                <td>Árbol CART (Podado, 30 h.)</td>
+                <td>0.7172</td>
+                <td>0.5966</td>
+                <td>0.7867</td>
+                <td>0.8834</td>
+                <td>0.6744</td>
+                <td>0.0931</td>
+              </tr>
+              <tr class="winner-row">
+                <td>🏆 Random Forest (500 árb.)</td>
+                <td>0.7929</td>
+                <td>0.6597</td>
+                <td>0.8288</td>
+                <td>0.9516</td>
+                <td>0.8408</td>
+                <td>0.0697</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.8rem; margin-top:8px; color:var(--text-muted);">
+            <strong>Logit Clásico (Statsmodels):</strong> Pseudo-$R^2$ de McFadden $= 0.4022$ ($p < 10^{-100}$). Con $N=4.768$ y $17$ predictores, la regularización casi no altera el AUC ($0.886–0.891$ en CV).
+          </p>
+        </div>
+
+        <div class="card card-emerald">
+          <h3>2. Tres Lecciones Metodológicas del Torneo</h3>
+          <ul>
+            <li><strong>Autopsia CART (Poda Cost-Complexity <code>ccp_alpha</code>):</strong> El árbol libre memorizó Train ($443$ hojas, $\text{AUC}_{\text{Train}} = 1.000 \to \text{AUC}_{\text{Test}} = 0.7874$). Elegir $\alpha^* = 0.00148$ por CV redujo el árbol a <strong>$30$ hojas</strong> y elevó $\text{AUC}_{\text{Test}}$ casi $+10\text{ p.p.}$ ($0.8834$).</li>
+            <li><strong>Autopsia Naive Bayes y Calibración Isotónica:</strong> Por violación de independencia intra-clase (<code>MORTDUE</code>–<code>VALUE</code>), <code>GaussianNB</code> subestimó la tasa media de mora ($12.45\%$ vs $19.97\%$ real, $\text{ECE} = 0.0752$). La <strong>Regresión Isotónica (CV=5)</strong> llevó la probabilidad media a <strong>$20.12\%$</strong>, redujo el error de calibración a <strong>$0.0235$</strong> y subió el Recall un $+48\%$ relativo ($18.5\% \to 27.3\%$).</li>
+            <li><strong>Convergencia Out-Of-Bag (OOB) en Random Forest:</strong> El error OOB se estabiliza a partir de $300–500$ árboles ($\text{AUC}_{\text{CV}} = 0.9490 \approx \text{AUC}_{\text{OOB}}$), logrando el menor <strong>Brier Score ($0.0697$)</strong>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>❓ Pregunta de defensa:</strong> ¿Por qué importa el Brier Score y la curva de calibración en un banco, y no solo el AUC-ROC? <br/>
+        <strong>Respuesta:</strong> Porque el AUC-ROC solo mide ordenamiento (ranking). Para calcular la Pérdida Esperada ($\text{EL} = \text{PD} \times \text{LGD} \times \text{EAD}$) y fijar tasas de interés, el banco necesita que $\hat{p} = 0.20$ signifique exactamente $20\%$ de mora real.
+      </div>
+
+      <div class="slide-footer">
+        <span>Módulo: src/phase3_ml.py — Pipeline exportado en artifacts/best_classifier.joblib</span>
+        <span>Slide 7 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 8: MDI VS PERMUTATION & ABLACIÓN ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-amber">Fase 3 — Auditoría de Importancia de Variables</span>
+          <h2>MDI vs. Permutation Importance y el Misterio de la Ablación</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. Ranking en Random Forest: Top Predictoras vs. Tratamiento</h3>
+          <p style="font-size:0.83rem; margin-bottom:10px;">Comparamos la reducción de impureza de Gini en Train (MDI) contra la caída del AUC al permutar en Test:</p>
+
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>#1 Perm / #2 MDI: <code>DEBTINC</code></strong> (Ratio Deuda/Ingreso)</span><span>MDI: 16.02% | ΔAUC: <strong>0.0450</strong></span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:100%; background:var(--accent-blue);"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>#2 Perm / #1 MDI: <code>DEBTINC_is_missing</code></strong> (Indicador MAR/MNAR)</span><span>MDI: <strong>20.17%</strong> | ΔAUC: <strong>0.0393</strong></span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:88%; background:var(--accent-emerald);"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>#3 Perm / #3 MDI: <code>CLAGE</code></strong> (Antigüedad Crediticia)</span><span>MDI: 9.37% | ΔAUC: 0.0378</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:84%; background:#6366f1;"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>#4 Perm / #4 MDI: <code>DELINQ</code></strong> (Moras Previas)</span><span>MDI: 8.90% | ΔAUC: 0.0320</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:71%; background:#8b5cf6;"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span><strong>#5 Perm / #8 MDI: <code>CLNO</code></strong> (Líneas de Crédito)</span><span>MDI: 6.62% | ΔAUC: 0.0214</span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:48%; background:#64748b;"></div></div>
+          </div>
+          <div class="bar-row" style="margin-top:12px; padding-top:8px; border-top:1px dashed var(--border-subtle);">
+            <div class="bar-label"><span style="color:var(--accent-rose);"><strong>#14 Perm / #12 MDI: <code>TREATMENT</code> (DebtCon vs HomeImp)</strong></span><span style="color:var(--accent-rose);">MDI: 1.02% | ΔAUC: <strong>0.0026</strong></span></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:6%; background:var(--accent-rose);"></div></div>
+          </div>
+        </div>
+
+        <div class="card card-amber">
+          <h3>2. Experimento de Ablación sobre <code>DEBTINC_is_missing</code></h3>
+          <p style="font-size:0.84rem; margin-bottom:8px;">¿Qué ocurre si eliminamos el indicador de nulos que encabezó el MDI?</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Escenario de Variables</th>
+                <th>AUC Test Logística</th>
+                <th>AUC Test Random Forest</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Todas las variables (17 features)</td>
+                <td><strong>0.8795</strong></td>
+                <td>0.9516</td>
+              </tr>
+              <tr>
+                <td>2. Sin <code>DEBTINC_is_missing</code></td>
+                <td><span class="badge b-fail">0.7638 (-11.6 p.p.)</span></td>
+                <td><strong>0.9565</strong></td>
+              </tr>
+              <tr>
+                <td>3. Sin indicador ni <code>DEBTINC</code></td>
+                <td><span class="badge b-fail">0.7432 (-13.6 p.p.)</span></td>
+                <td><strong>0.9672</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <ul style="margin-top:10px;">
+            <li><strong>¿Por qué se desploma la Logística?</strong> Al ser lineal, necesita el salto binario de <code>DEBTINC_is_missing</code> para distinguir un $34.78\%$ real de los $1.018$ casos imputados con la mediana en Train.</li>
+            <li><strong>¿Por qué resiste el Random Forest?</strong> Porque los árboles profundos aprenden a encerrar el valor exacto de la mediana imputada ($\text{DEBTINC} \in [34.77, 34.79]$) reconstituyendo implícitamente el indicador de omisión y explotando interacciones no lineales del resto de variables.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>🔥 El Puente hacia la Fase 4:</strong> Mirando el gráfico izquierdo, un gerente sin formación causal diría: <em>"TREATMENT está en el puesto 14 de 17 (apenas mueve 0.0026 el AUC), así que la modalidad del préstamo no importa"</em>. En las siguientes 3 diapositivas demostramos por qué esa conclusión es catastrófica.
+      </div>
+
+      <div class="slide-footer">
+        <span>Validado en tests/test_phase3.py (6/6 tests aprobados)</span>
+        <span>Slide 8 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 9: DAG CAUSAL Y MEDIATOR TRAP ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-rose">Fase 4 — Inferencia Causal Estructural (SCM / Judea Pearl)</span>
+          <h2>Grafo Acíclico Dirigido (DAG), Criterio Backdoor y Trampa del Mediador</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. Topología Estructural del DAG (<code>artifacts/causal_dag.dot</code>)</h3>
+          <!-- Clean inline SVG diagram of the DAG -->
+          <svg viewBox="0 0 540 250" style="width:100%; height:210px; background:rgba(6,9,19,0.6); border-radius:10px; border:1px solid var(--border-subtle); margin-bottom:8px;">
+            <defs>
+              <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+              </marker>
+              <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e"/>
+              </marker>
+              <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
+              </marker>
+              <marker id="arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+              </marker>
+            </defs>
+
+            <!-- Confounders Z -->
+            <rect x="18" y="25" width="155" height="195" rx="10" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="1.8"/>
+            <text x="95" y="50" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">Confusores Basales Z</text>
+            <text x="95" y="72" fill="#e2e8f0" font-size="10.5" text-anchor="middle">DEBTINC, DELINQ</text>
+            <text x="95" y="92" fill="#e2e8f0" font-size="10.5" text-anchor="middle">DEROG, CLAGE, NINQ</text>
+            <text x="95" y="112" fill="#e2e8f0" font-size="10.5" text-anchor="middle">CLNO, MORTDUE</text>
+            <text x="95" y="132" fill="#e2e8f0" font-size="10.5" text-anchor="middle">VALUE, YOJ, JOB</text>
+            <text x="95" y="195" fill="#6ee7b7" font-size="10" font-weight="bold" text-anchor="middle">✓ BLOQUEAR (Backdoor)</text>
+
+            <!-- Treatment T -->
+            <rect x="215" y="100" width="115" height="52" rx="8" fill="rgba(244,63,94,0.2)" stroke="#f43f5e" stroke-width="2"/>
+            <text x="272" y="123" fill="#fda4af" font-size="12" font-weight="bold" text-anchor="middle">TREATMENT (T)</text>
+            <text x="272" y="140" fill="#f1f5f9" font-size="9.5" text-anchor="middle">1=DebtCon | 0=HomeImp</text>
+
+            <!-- Mediator LOAN -->
+            <rect x="305" y="16" width="115" height="46" rx="8" fill="rgba(245,158,11,0.18)" stroke="#f59e0b" stroke-width="1.8"/>
+            <text x="362" y="36" fill="#fcd34d" font-size="11.5" font-weight="bold" text-anchor="middle">LOAN (Mediador M)</text>
+            <text x="362" y="52" fill="#fde68a" font-size="9.5" text-anchor="middle">✗ NO CONDICIONAR</text>
+
+            <!-- Outcome BAD -->
+            <rect x="415" y="100" width="108" height="52" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+            <text x="469" y="123" fill="#6ee7b7" font-size="12" font-weight="bold" text-anchor="middle">BAD (Outcome Y)</text>
+            <text x="469" y="140" fill="#f1f5f9" font-size="9.5" text-anchor="middle">1=Default | 0=Paid</text>
+
+            <!-- Collider C -->
+            <rect x="300" y="192" width="125" height="44" rx="8" fill="rgba(148,163,184,0.12)" stroke="#94a3b8" stroke-dasharray="4,3" stroke-width="1.5"/>
+            <text x="362" y="212" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">COLLIDER (C)</text>
+            <text x="362" y="227" fill="#94a3b8" font-size="9" text-anchor="middle">✗ Paradoja de Berkson</text>
+
+            <!-- Edges -->
+            <line x1="173" y1="115" x2="213" y2="122" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+            <path d="M 173 75 Q 310 75 413 110" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+            <line x1="330" y1="126" x2="413" y2="126" stroke="#f43f5e" stroke-width="3" marker-end="url(#arrow-red)"/>
+            <line x1="285" y1="100" x2="330" y2="64" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-amber)"/>
+            <line x1="395" y1="62" x2="450" y2="98" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-amber)"/>
+            <line x1="285" y1="152" x2="330" y2="190" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-gray)"/>
+            <line x1="450" y1="152" x2="395" y2="190" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-gray)"/>
+          </svg>
+          <p style="font-size:0.81rem;">
+            <strong>Supuestos Axiomáticos Verificados:</strong> 1) <strong>SUTVA</strong> (préstamos hipotecarios individuales sin interferencia), 2) <strong>Ignorabilidad Fuerte</strong> $(Y(0),Y(1))\perp\!\!\!\perp T \mid \mathbf{Z}$, 3) <strong>Positividad</strong> $0.025 \le \hat{e}(\mathbf{Z}) \le 0.975$.
+          </p>
+        </div>
+
+        <div class="card card-rose">
+          <h3>2. Autopsia Causal: La Trampa del Mediador (<code>LOAN</code>)</h3>
+          <ul>
+            <li><strong>Mecanismo:</strong> Quien consolida deudas solicita préstamos mayores para cancelar pasivos previos ($\mu_{\text{DebtCon}} = \$19.663$ vs $\mu_{\text{HomeImp}} = \$15.931$, Welch $t = 9.94, p = 7.8 \times 10^{-23}$).</li>
+            <li>Si incluimos erróneamente a <code>LOAN</code> como control en el ajuste Backdoor, <strong>bloqueamos el canal indirecto</strong> $T \to \text{LOAN} \to \text{BAD}$:</li>
+          </ul>
+          <table style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>Especificación del Conjunto de Ajuste</th>
+                <th>Estimando</th>
+                <th>Valor Estimado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="winner-row">
+                <td><strong>Backdoor Correcto ($Z$ sin <code>LOAN</code>)</strong></td>
+                <td>Efecto Causal Total ($\text{ATE}$)</td>
+                <td><strong>-0.0554 (-5.54 p.p.)</strong></td>
+              </tr>
+              <tr>
+                <td>Sobrecontrolado ($Z + \text{LOAN}$)</td>
+                <td>Efecto Directo ($\text{NDE}$)</td>
+                <td><span class="badge b-fail">-0.0440 (-4.40 p.p.)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Sesgo de Sobrecontrol (Mediator Trap)</strong></td>
+                <td>Atenuación artificial</td>
+                <td><span class="badge b-warn">20.61% de pérdida</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.82rem; margin-top:10px;">
+            <strong>Peligro del Colisionador ($T \to C \leftarrow Y$):</strong> Filtrar por "créditos aprobados por excepción del comité" ($C=1$) induce una correlación negativa espuria entre colateral y solvencia (<strong>Paradoja de Berkson</strong>).
+          </p>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>❓ Pregunta de defensa:</strong> ¿Cómo garantizan en código que nadie vuelva a meter a <code>LOAN</code> como confusor por accidente? <br/>
+        <strong>Respuesta:</strong> En <code>src/config.py</code> separamos <code>CAUSAL_MEDIATOR = "LOAN"</code> fuera de <code>CAUSAL_CONFOUNDERS</code>, y en <code>tests/test_phase4.py</code> hay un assert determinístico: <code>assert "LOAN" not in backdoor_vars</code>.
+      </div>
+
+      <div class="slide-footer">
+        <span>Módulo: src/phase4_causal.py — Identificación formal en DoWhy</span>
+        <span>Slide 9 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 10: ATE, BIAS Y REFUTACIONES ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-rose">Fase 4 — Estimación DoWhy, Sesgo de Confusión y Falsación de Popper</span>
+          <h2>Del Sesgo Observacional (+39.5%) a la Robustez Causal Certificada</h2>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--text-muted);">-3.36 p.p.</div>
+          <div class="kpi-lbl">Asociación Ingenua (Naive OLS)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-emerald);">-5.54 p.p.</div>
+          <div class="kpi-lbl">ATE Backdoor OLS (p &lt; 0.001)</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-blue);">-4.45 p.p.</div>
+          <div class="kpi-lbl">ATE IPW Hájek Trimmed [0.025, 0.975]</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-val" style="color:var(--accent-amber);">1.995</div>
+          <div class="kpi-lbl">E-Value de Sensibilidad (RR = 1.331)</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. Descomposición Analítica del Sesgo de Confusión</h3>
+          <div class="formula">
+            E[Y | T=1] - E[Y | T=0] = ATE + Sesgo de Auto-Selección = -0.0554 + 0.0219 = -0.0336
+          </div>
+          <ul>
+            <li><strong>¿Por qué el modelo ingenuo subestima el beneficio en un $39.47\%$?</strong> Porque los clientes que eligen <code>DebtCon</code> ingresan con mayor deterioro basal (más moras <code>DELINQ</code> y mayor <code>DEBTINC</code>, probado en Fase 1).</li>
+            <li>Al bloquear los 10 caminos Backdoor con DoWhy, aislamos la cirugía $do(T=1)$: consolidar pasivos reduce el riesgo absoluto de default de $22.28\%$ a $16.74\%$ (<strong>$-5.54\text{ p.p.}$</strong>).</li>
+            <li><strong>Sensibilidad ante Confusores No Observados ($U$):</strong> El <strong>E-Value $= 1.995$</strong> demuestra que una variable omitida (ej. disciplina financiera latente) debería casi duplicar simultáneamente ($RR \approx 2.0$) la probabilidad de elegir <code>DebtCon</code> y de caer en mora para anular el efecto protector hallado.</li>
+          </ul>
+        </div>
+
+        <div class="card card-emerald">
+          <h3>2. Semáforo de Falsación Estocástica en DoWhy (3/3)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Prueba de Refutación</th>
+                <th>Mecanismo Estocástico</th>
+                <th>Efecto Obtenido</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Random Common Cause</strong></td>
+                <td>Inyecta confusor de ruido blanco $W \sim \mathcal{N}(0,1)$</td>
+                <td>$\widehat{\text{ATE}} = -0.0554$<br/>($\Delta < 0.0001$)</td>
+                <td><span class="badge b-pass">🟢 APROBADO</span></td>
+              </tr>
+              <tr>
+                <td><strong>2. Placebo Treatment</strong></td>
+                <td>Permuta $T$ por vector binario aleatorio independiente</td>
+                <td>$\widehat{\text{ATE}} = +0.0004$<br/>(Colapsa a $0$)</td>
+                <td><span class="badge b-pass">🟢 APROBADO</span></td>
+              </tr>
+              <tr>
+                <td><strong>3. Data Subset (80%)</strong></td>
+                <td>Re-estima sobre submuestras aleatorias del $80\%$</td>
+                <td>$\widehat{\text{ATE}} = -0.0720$<br/>(Conserva signo y orden)</td>
+                <td><span class="badge b-pass">🟢 APROBADO</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.81rem; margin-top:10px; color:var(--text-muted);">
+            <strong>Autopsia IPW (Entrada 3):</strong> El IPW Horvitz-Thompson crudo tenía pesos extremos $w_i > 190$. Se estabilizó con Trimming $[0.025, 0.975]$ y normalización de Hájek.
+          </p>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>💡 Punto clave para el jurado:</strong> No nos conformamos con un único estimador causal: convergen Regresión Lineal Backdoor ($-5.54\text{ p.p.}$), Propensity Score IPW Hájek ($-4.45\text{ p.p.}$) y las 3 pruebas de refutación de DoWhy.
+      </div>
+
+      <div class="slide-footer">
+        <span>Resumen persistido en artifacts/causal_summary.json</span>
+        <span>Slide 10 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 11: DOUBLE ML & CATE ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-rose">Fase 4 — Causal Machine Learning (EconML / Chernozhukov et al.)</span>
+          <h2>Efectos Heterogéneos Individuales $\tau(x)$ con Double ML y Cross-Fitting</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. Ortogonalización de Neyman y Cross-Fitting ($K = 5$)</h3>
+          <p style="font-size:0.84rem;">Para estimar $\tau(X) = \mathbb{E}[Y(1)-Y(0) \mid X]$ sin sesgo de regularización $\mathcal{O}_p(N^{-1/4})$, implementamos <code>LinearDML</code> y <code>CausalForestDML</code> (Árboles Honestos) con <strong>Cross-Fitting en 5 pliegues</strong>:</p>
+          <div class="formula">
+            Ỹ = Y - Ê<sub>-k</sub>[Y | X, W], &nbsp;&nbsp; T̃ = T - Ê<sub>-k</sub>[T | X, W] &nbsp;&Rightarrow;&nbsp; Ỹ = τ(X) · T̃ + ε
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Modificador de Efecto ($X$)</th>
+                <th>Coeficiente LinearDML</th>
+                <th>Interpretación Microeconómica</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Intercepto</code> ($\tau_0$)</td>
+                <td><strong>-0.2030</strong></td>
+                <td>Fuerte efecto protector base de consolidar deuda</td>
+              </tr>
+              <tr>
+                <td><code>DEBTINC</code> (Deuda/Ingreso)</td>
+                <td><strong>+0.00380</strong></td>
+                <td>A mayor sobreendeudamiento extremo, se diluye el efecto protector</td>
+              </tr>
+              <tr>
+                <td><code>VALUE</code> (Tasación USD)</td>
+                <td>$-2.07 \times 10^{-7}$</td>
+                <td>Mayor respaldo patrimonial amplifica levemente el beneficio</td>
+              </tr>
+              <tr>
+                <td><code>CLAGE</code> (Antigüedad mes)</td>
+                <td>$+0.00040$</td>
+                <td>Deudores muy antiguos tienen menor cambio marginal por producto</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card card-emerald">
+          <h3>2. Segmentación Prescriptiva de Cartera ($N_{\text{train}} = 4.768$)</h3>
+          <p style="font-size:0.84rem; margin-bottom:10px;">El CATE promedio es $\bar{\tau} = -1.88\text{ p.p.}$ ($\text{SD} = 4.53\text{ p.p.}$), pero su distribución revela <strong>tres regímenes de decisión comercial</strong>:</p>
+
+          <div class="card" style="background:rgba(16,185,129,0.14); border-color:rgba(16,185,129,0.4); margin-bottom:10px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>🟢 1. Persuadibles / Beneficiarios ($\tau(x) &lt; -2\%$)</strong>
+              <span class="badge b-pass">38.9% (1.855 clientes)</span>
+            </div>
+            <p style="font-size:0.8rem; margin-top:4px;">Deudores con estrés moderado: ofrecer reestructuración <code>DebtCon</code> reduce drásticamente su probabilidad de cesación de pagos.</p>
+          </div>
+
+          <div class="card" style="background:rgba(56,189,248,0.1); border-color:rgba(56,189,248,0.3); margin-bottom:10px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>⚪ 2. Neutros / Orgánicos ($-2\% \le \tau(x) \le +2\%$)</strong>
+              <span class="badge" style="background:rgba(148,163,184,0.2); color:#e2e8f0;">52.6% (2.507 clientes)</span>
+            </div>
+            <p style="font-size:0.8rem; margin-top:4px;">Perfiles solventes: su tasa de cumplimiento es invariante al destino del crédito. No requieren incentivo comercial.</p>
+          </div>
+
+          <div class="card" style="background:rgba(244,63,94,0.14); border-color:rgba(244,63,94,0.4); padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>🔴 3. Reactivos Adversos ($\tau(x) &gt; +2\%$)</strong>
+              <span class="badge b-fail">8.5% (406 clientes)</span>
+            </div>
+            <p style="font-size:0.8rem; margin-top:4px;">Insolvencia crónica ($\text{DEBTINC} > 50\%$): consolidar deuda sin saneamiento previo agrava el riesgo moral y el default.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>❓ Pregunta de defensa:</strong> ¿Por qué es obligatorio <code>cv=5</code> (Cross-Fitting) en Double ML? <br/>
+        <strong>Respuesta:</strong> Si entrenáramos los Random Forest de nuisance ($Y \sim W$ y $T \sim W$) y calculáramos residuos en la misma muestra (<code>cv=1</code>), los errores de estimación de alta dimensión correlacionarían consigo mismos, violando la ortogonalidad de Neyman y colapsando el CATE hacia cero.
+      </div>
+
+      <div class="slide-footer">
+        <span>Artefacto para simulación en vivo: artifacts/causal_cate_model.joblib</span>
+        <span>Slide 11 de 12</span>
+      </div>
+    </section>
+
+    <!-- ==================== SLIDE 12: ENSAYO CRÍTICO & PRODUCCIÓN ==================== -->
+    <section class="slide">
+      <div class="slide-header">
+        <div>
+          <span class="phase-tag tag-green">Síntesis Ejecutiva — Ensayo Crítico Unificado &amp; Pase a Producción</span>
+          <h2>El Choque Causal vs. Predictivo y Gobernanza en Producción</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <h3>1. Síntesis del Ensayo Crítico: Biomarcador vs. Palanca</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Atributo</th>
+                <th>Rol en Random Forest (Fase 3)</th>
+                <th>Rol Causal en DoWhy / DML (Fase 4)</th>
+                <th>Decisión de Gobernanza</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>DEBTINC_is_missing</code></td>
+                <td><strong>#1 MDI (20.17%)</strong><br/>#2 Perm (0.0393)</td>
+                <td>Marcador de registro MAR/MNAR ($OR=16.3\times$). No manipulable</td>
+                <td>Usar en Scoring; <strong>jamás</strong> como meta comercial</td>
+              </tr>
+              <tr>
+                <td><code>DEBTINC</code></td>
+                <td><strong>#1 Perm (0.0450)</strong><br/>#2 MDI (16.02%)</td>
+                <td>Confusor y modificador de efecto ($\beta_{\text{DML}} = +0.0038$)</td>
+                <td>Usar para segmentar a quién ofrecer el producto</td>
+              </tr>
+              <tr>
+                <td><code>LOAN</code></td>
+                <td>#7 MDI / #9 Perm</td>
+                <td><strong>Mediador ($M$)</strong>. Controlarlo atenúa el ATE un $20.61\%$</td>
+                <td><strong>Prohibir</strong> como control en evaluación de políticas</td>
+              </tr>
+              <tr class="winner-row">
+                <td><strong><code>TREATMENT</code></strong></td>
+                <td><span class="badge b-fail">#14 de 17 Perm (0.0026)</span></td>
+                <td><strong>Palanca Causal Real: $\text{ATE} = -5.54\text{ p.p.}$ ($p &lt; 0.001$)</strong></td>
+                <td><strong>Intervenir activamente en el 38.9% Persuadible</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.82rem; margin-top:10px;">
+            <strong>Conclusión Central:</strong> Confundir importancia predictiva con efecto causal equivale a prohibir los termómetros porque la fiebre predice mortalidad, e ignorar el antibiótico (<code>TREATMENT</code>) porque en datos observacionales solo lo tomaban los pacientes más graves.
+          </p>
+        </div>
+
+        <div class="card card-emerald">
+          <h3>2. Arquitectura Desacoplada Lista para Producción (Fase 5)</h3>
+          <ul>
+            <li><strong>Repositorio 100% Reproducible:</strong> Notebook maestro <code>notebooks/TP_Integrador_Final.ipynb</code> (52 celdas ejecutadas de principio a fin sin errores).</li>
+            <li><strong>Quality Gate Determinístico:</strong> <strong>34 tests unitarios en <code>pytest</code> pasando en 9.3s</strong> (auditoría de anti-leakage, Welch ANOVA, Gauss-Markov, Torneo ML, DAG Backdoor, DML y artefactos).</li>
+            <li><strong>Contrato de Artefactos en <code>artifacts/</code> para la Web App:</strong>
+              <ul>
+                <li><strong>Tab 1 (Espacio Latente):</strong> <code>pca_pipeline.joblib</code> + <code>phase1_2_summary.json</code></li>
+                <li><strong>Tab 2 (Simulador de Riesgo):</strong> <code>best_classifier.joblib</code> + <code>ml_metrics.json</code></li>
+                <li><strong>Tab 3 (Motor Causal CATE):</strong> <code>causal_dag.dot</code> + <code>causal_cate_model.joblib</code> + <code>causal_summary.json</code></li>
+              </ul>
+            </li>
+          </ul>
+          <div class="formula" style="margin-top:10px; border-color:var(--accent-emerald); font-family:'Segoe UI', sans-serif; font-weight:700; font-size:0.9rem;">
+             Regla de Decisión Óptima: Scoring RF P(BAD|X) &nbsp;+&nbsp; Prescripción DML τ(X) &lt; -2%
+          </div>
+        </div>
+      </div>
+
+      <div class="notes-panel">
+        <strong>👏 Cierre de Defensa (30 seg):</strong> Con este trabajo demostramos que la verdadera Inteligencia de Decisiones requiere combinar el poder predictivo del Machine Learning bien calibrado con la identificación estructural de la Inferencia Causal, respaldados por ingeniería de software testeada y auditable. ¡Muchas gracias! ¿Preguntas?
+      </div>
+
+      <div class="slide-footer">
+        <span>Decision Intelligence Capstone — EAyMR 2026 (German Sittner, Martín Peña, Santiago Salvatore)</span>
+        <span>Slide 12 de 12</span>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slideCounter');
+    const progressBar = document.getElementById('progressBar');
+    let current = 0;
+
+    function updateSlide(index) {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === index);
+      });
+      counter.textContent = `${index + 1} / ${slides.length}`;
+      progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+    }
+
+    function nextSlide() {
+      if (current < slides.length - 1) {
+        current++;
+        updateSlide(current);
+      }
+    }
+
+    function prevSlide() {
+      if (current > 0) {
+        current--;
+        updateSlide(current);
+      }
+    }
+
+    function toggleNotes() {
+      document.body.classList.toggle('show-notes');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      }
+    });
+  </script>
+</body>
+</html>
