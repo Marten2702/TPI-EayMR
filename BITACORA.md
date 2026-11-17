@@ -8,6 +8,30 @@
 
 ---
 
+## Organización del Equipo y Metodología de Trabajo
+
+### Por qué no usamos los cuatro roles propuestos
+La consigna propone repartir el trabajo en cuatro roles transversales (Project Lead, Backend/ML, Frontend/UX y QA). Con un equipo de tres integrantes, esa división tenía dos problemas: sobraba un rol, y cada persona habría tocado un pedazo de todas las fases sin terminar de dominar ninguna. Para la defensa individual eso era un riesgo, porque cada uno tiene que poder explicar a fondo lo que hizo.
+
+Por eso organizamos el trabajo **por fases y no por funciones**, con una lógica ágil: primero una base común y después frentes de trabajo en paralelo, cada uno con un responsable de punta a punta.
+
+### Cómo nos organizamos
+| Etapa | Responsable | Qué incluye |
+|---|---|---|
+| **Fase 0 (Sprint 0): base común** | German Sittner | Elección del dataset, contrato de variables (`src/config.py`), limpieza, imputación y partición train/test congelada (`src/data_pipeline.py`). |
+| **Workstream A: Fases 1 y 2** | German Sittner | Inferencia, ANOVA, supuestos de Gauss-Markov y PCA. |
+| **Workstream B: Fase 3** | Martín Pena | Torneo predictivo, poda, calibración e importancia de variables. |
+| **Workstream C: Fase 4** | Santiago Salvatore | DAG, ATE, CATE y refutaciones. |
+| **Fase 5: integración y app** | Todo el equipo | Notebook maestro, Web App, tests, README y presentación. |
+
+### Por qué nos sirvió
+- **La Fase 0 evitó incompatibilidades.** Al fijar desde el principio las variables, la partición y la imputación, las tres fases trabajaron sobre exactamente los mismos datos. Así nadie tuvo que esperar a otro para avanzar, y los resultados de una fase se pueden comparar con los de otra.
+- **Cada uno es dueño de una parte completa.** Quien hizo una fase la planteó, la programó, la interpretó y la defiende. Eso da más profundidad que repartir tareas sueltas.
+- **El control de calidad fue compartido.** En lugar de un único QA, cada responsable validó su fase con tests y con la revisión de sus resultados, y al integrar todo se corrió la suite completa de `pytest`.
+- **Limitación que reconocemos.** No usamos *pull requests* con aprobación formal: los cambios se subieron directamente a `main` y se revisaron entre todos antes de la entrega. En un proyecto más largo o con más integrantes, conviene sumar ese paso.
+
+---
+
 ## Entrada 1 — Marco Estratégico, Contrato de Datos y Partición sin Data Leakage
 *Responsable: German Sittner (Project Lead & Scrum Master)*  
 *Auditoría: QA & Validation (Equipo EAyMR)*  
@@ -155,9 +179,22 @@ flowchart LR
 *Responsable: Equipo EAyMR 2026 (Auditoría Transversal QA)*  
 *Fecha: Noviembre 2026*
 
-### 5.1 Protocolo de Gobernanza con LLMs
-1. **No Delegación Teórica:** Las variables del contrato (`src/config.py`), los tests de supuestos, el DAG causal y la separación entre Nivel 1 (predictivo) y Nivel 2 (intervención) fueron definidos por el equipo; los LLMs actuaron como asistentes de estructuración y refactorización modular.
-2. **Validación Determinística:** Ningún bloque de código integró el repositorio sin ejecución limpia y validación por la suite automatizada `pytest`.
+### 5.1 Cómo trabajamos con la IA
+Usamos asistentes de IA (entre ellos Claude, de Anthropic) como **herramienta de programación y redacción, no como reemplazo del análisis**. El trabajo fue una conversación iterativa:
+
+1. **Definir antes de programar.** Primero charlábamos con el asistente qué queríamos hacer en cada fase a partir de la consigna y de la teoría de la materia: qué contraste usar, qué modelo comparar, qué supuesto revisar.
+2. **Construir paso a paso.** El código se pidió por partes chicas (cargar datos, ajustar un modelo, armar un gráfico), no todo de una vez.
+3. **Ejecutar y verificar cada paso.** Cada bloque se corrió y su salida se comparó con lo esperado antes de seguir. Si algo no tenía sentido estadístico o daba error, se corregía en ese momento.
+4. **Contrastar el texto con los números.** Toda interpretación escrita se revisó contra la salida real del código. Varias afirmaciones de la IA resultaron falsas y se corrigieron (ver 5.2).
+5. **Decidir nosotros.** Las decisiones metodológicas (qué variables son confusores, qué es mediador, cómo imputar, qué modelo recomendar) las tomó el equipo.
+
+| Etapa | Qué hicimos nosotros | Para qué usamos la IA | Cómo lo verificamos |
+|---|---|---|---|
+| Planteo | Leer la consigna, elegir el dataset y definir las preguntas | Discutir alternativas y ordenar el plan de cada fase | Contraste con la consigna y la rúbrica |
+| Código | Decidir qué análisis hacer y con qué método | Escribir y depurar el código paso a paso | Ejecutar cada celda y revisar salidas, dimensiones y errores |
+| Resultados | Interpretar estadísticamente cada salida | Proponer una primera redacción | Comparar cada cifra del texto con la salida del código |
+| Calidad | Definir qué tenía que cumplir cada fase | Escribir tests de `pytest` | Correr la suite completa (26 tests) |
+| Comunicación | Elegir los mensajes clave para la defensa | Armar la Web App, el README y las diapositivas | Revisar que cada número coincida con el notebook |
 
 ### 5.2 Matriz de Errores de IA Detectados y Refutados
 | Propuesta / Sesgo de LLM | Falacia Metodológica | Refutación y Corrección del Equipo |
@@ -166,6 +203,10 @@ flowchart LR
 | Incluir `LOAN` dentro de `CAUSAL_CONFOUNDERS` en `DoWhy`. | *The Mediator Trap* (Sobrecontrol) | Se excluyó `LOAN` de `CAUSAL_CONFOUNDERS` en `src/config.py`, se fijó `CAUSAL_MEDIATOR = "LOAN"` y se blindó en `test_phase4.py`. |
 | Usar `LinearDML(cv=1)` para acelerar ejecución. | *Regularization Bias* $\mathcal{O}_p(N^{-1/4})$ | Se impuso `cv=5` obligatorio en `src/phase4_causal.py` garantizando ortogonalidad de Neyman. |
 | Descartar filas con nulos en `DEBTINC` mediante `dropna()`. | Sesgo de selección bajo MAR/MNAR | Se demostró $\text{OR} = 16.3\times$ en Fase 1, preservando `DEBTINC_is_missing` e imputando medianas solo sobre Train. |
+| Describir a Naive Bayes como "sobreconfiado". | Interpretación no verificada | El diagrama de calibración mostró lo contrario: subestima el riesgo (probabilidad media 12,5 % contra 20 % real). Se corrigió el texto. |
+| Medir la cardinalidad de las variables (para explicar el sesgo de MDI) sobre test. | Inconsistencia metodológica | Se recalculó sobre train, que es donde el bosque elige los cortes. |
+| Explicar la robustez del Random Forest sin el indicador de faltante por la "huella" de la imputación. | Explicación incompleta | El escenario sin `DEBTINC` (AUC 0,967) la descartó: el bosque encuentra sustitutos en otras variables. Se reescribió la conclusión. |
+| Afirmar que la política es "altamente protectora" para ratios deuda/ingreso de 35 % a 48 %. | Contradicción con los propios resultados | El CATE muestra que el efecto se vuelve perjudicial desde 40 %. Se corrigió el ensayo. |
 
 ### 5.3 Puerta de Calidad (`pytest` + Artefactos Serializados)
 La suite unificada en `tests/` valida de punta a punta:
