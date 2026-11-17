@@ -3,7 +3,7 @@
 **Cátedra:** Estadística Aplicada y Modelos de Regresión (EAyMR 2026)  
 **Institución:** Pontificia Universidad Católica Argentina (UCA) — Facultad de Ingeniería y Ciencias Agrarias  
 **Profesor Titular:** Prof. Ivan Gonzalo Vilaboa  
-**Equipo Scrum:** German Sittner (Project Lead & Fases 1–2) | Martín Peña (ML Engineer, Fase 3) | Santiago Salvatore (Causal Engineer, Fase 4)  
+**Equipo Scrum:** German Sittner (Project Lead & Fases 1–2) | Martín Pena (ML Engineer, Fase 3) | Santiago Salvatore (Causal Engineer, Fase 4)  
 **Dataset Oficial:** HMEQ (Home Equity Loan Dataset, $N = 5.960$, 13 variables originales)
 
 ---
@@ -70,7 +70,7 @@ El análisis univariado y bivariado sobre `train.csv` ($N = 4.768$) evidenció f
 ---
 
 ## Entrada 3 — Autopsia de Experimentos Fallidos (Data Autopsy) y Remediaciones (Fases 2, 3 y 4)
-*Responsables: German Sittner (Fase 2), Martín Peña (Fase 3) y Santiago Salvatore (Fase 4)*  
+*Responsables: German Sittner (Fase 2), Martín Pena (Fase 3) y Santiago Salvatore (Fase 4)*  
 *Fecha: Noviembre 2026*
 
 ```mermaid
@@ -109,7 +109,7 @@ flowchart TD
 ---
 
 ## Entrada 4 — Síntesis de Torneo ML, Formalización Causal (SCM/DAG) y Choque Epistemológico
-*Responsables: Martín Peña (Fase 3) y Santiago Salvatore (Fase 4)*  
+*Responsables: Martín Pena (Fase 3) y Santiago Salvatore (Fase 4)*  
 *Revisión: German Sittner*  
 *Fecha: Noviembre 2026*
 

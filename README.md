@@ -138,7 +138,7 @@ Los detalles están en [`app/README.md`](app/README.md).
 | Integrante | Rol |
 |---|---|
 | Germán Sittner | Project Lead · Fases 1 y 2 |
-| Martín Peña | ML Engineer · Fase 3 |
+| Martín Pena | ML Engineer · Fase 3 |
 | Santiago Salvatore | Causal Engineer · Fase 4 |
 
 Las decisiones, los experimentos fallidos y el uso de IA están documentados en [`BITACORA.md`](BITACORA.md).
