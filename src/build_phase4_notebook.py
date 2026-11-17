@@ -500,7 +500,7 @@ plt.show()
 
 ## 📝 5. Ensayo Crítico Unificado: "El Choque Causal vs. Predictivo en la Toma de Decisiones Financieras"
 
-**Integración Metodológica:** Equipo EAyMR 2026 (German Sittner, Martín Peña y Santiago Salvatore)  
+**Integración Metodológica:** Equipo EAyMR 2026 (German Sittner, Martín Pena y Santiago Salvatore)  
 **Cátedra:** Estadística Aplicada y Modelos de Regresión (EAyMR 2026) — UCA  
 **Área:** Gobernanza de Algoritmos, Econometría y Causal Artificial Intelligence
 

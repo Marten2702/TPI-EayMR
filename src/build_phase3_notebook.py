@@ -2,7 +2,7 @@
 src/build_phase3_notebook.py
 Generador modular de celdas para la FASE 3: Torneo de Modelos Predictivos y Calibración.
 Cátedra: Estadística Aplicada y Modelos de Regresión (EAyMR 2026) — UCA
-Responsable de Fase: Martín Peña (Machine Learning Engineer)
+Responsable de Fase: Martín Pena (Machine Learning Engineer)
 """
 
 import nbformat as nbf
@@ -16,7 +16,7 @@ def get_phase3_cells() -> list:
 
 # 🌲 FASE 3: Torneo de Modelos Predictivos y Calibración *(Unidades 4 y 5)*
 
-**Responsable de Workflow:** Martín Peña (Machine Learning Engineer)  
+**Responsable de Workflow:** Martín Pena (Machine Learning Engineer)  
 **Pregunta de la fase:** Dado el perfil de un solicitante, ¿qué probabilidad calibrada tiene de entrar en default (`BAD = 1`)?  
 Es una pregunta estrictamente **observacional / predictiva** (Nivel 1 de Pearl: $P(Y \mid X)$). Evaluamos cuatro familias sobre la partición congelada (`train.csv` = 4.768, `test.csv` = 1.192) sin fuga de datos.
 

@@ -23,7 +23,7 @@ def build_and_execute():
 **Profesor Titular:** Prof. Ivan Gonzalo Vilaboa  
 **Integrantes y Roles Scrum:**
 - 👑 **Project Lead, Scrum Master & Econometría (Fases 1–2):** German Sittner
-- ⚙ **Backend & Machine Learning Engineer (Fase 3):** Martín Peña
+- ⚙ **Backend & Machine Learning Engineer (Fase 3):** Martín Pena
 - 🧠 **Causal Inference & Causal ML Engineer (Fase 4):** Santiago Salvatore
 - 🔍 **QA, Validation & UI/UX Deployment (Transversal & Fase 5):** Equipo EAyMR (Validación cruzada `pytest`)
 

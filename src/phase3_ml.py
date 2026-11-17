@@ -1,7 +1,7 @@
 """
 src/phase3_ml.py
 Módulo del Torneo de Modelos Predictivos y Calibración (Fase 3 / Unidades 4 y 5).
-Responsable de Fase: Martín Peña (Machine Learning Engineer)
+Responsable de Fase: Martín Pena (Machine Learning Engineer)
 Integración Modular: Equipo EAyMR 2026 - UCA
 
 Implementa:
