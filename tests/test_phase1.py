@@ -4,18 +4,27 @@ Tests automáticos de calidad determinística para la Fase 1
 Auditor: QA & Validation Engineer
 """
 
-import pytest
 import os
 import pandas as pd
 import numpy as np
 from src.phase1_inference import (
-    load_raw_data,
+    load_phase1_datasets,
     analyze_missing_mechanism,
     run_hypothesis_contrasts,
     run_anova_and_diagnostics
 )
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "hmeq.csv")
+
+
+def load_raw_data(path=DATA_PATH):
+    """Dataset crudo (para la auditoría de faltantes y los contrastes)."""
+    return pd.read_csv(path)
+
+
+def load_train_data():
+    """Partición de entrenamiento (para el ANOVA, como en el notebook)."""
+    return load_phase1_datasets()[1]
 
 
 def test_dataset_loading_and_shape():
@@ -62,7 +71,7 @@ def test_hypothesis_contrasts_structure():
 
 def test_anova_heteroscedasticity_and_welch():
     """Verifica la detección de heterocedasticidad (Levene) y cálculo de Welch ANOVA."""
-    df = load_raw_data(DATA_PATH)
+    df = load_train_data()
     anova_res = run_anova_and_diagnostics(df)
     
     # El test de Levene debe rechazar homocedasticidad

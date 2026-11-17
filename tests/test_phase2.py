@@ -4,12 +4,10 @@ Tests automáticos de calidad determinística para la Fase 2 (Gauss-Markov y PCA
 Auditor: QA & Validation Engineer
 """
 
-import pytest
-import os
-import pandas as pd
 import numpy as np
+from src.config import TARGET_CONTINUOUS
 from src.phase2_econometrics import (
-    prepare_econometric_data,
+    load_phase2_splits,
     fit_ols_reference,
     audit_gauss_markov,
     detect_influential_points,
@@ -17,12 +15,17 @@ from src.phase2_econometrics import (
     run_pca_no_leakage
 )
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "hmeq.csv")
+
+
+def prepare_econometric_data():
+    """Partición congelada del Sprint 0: X e y de train para el MCO del monto (LOAN)."""
+    train_df, test_df, predictor_cols = load_phase2_splits()
+    return train_df, train_df[predictor_cols], train_df[TARGET_CONTINUOUS], test_df
 
 
 def test_ols_reference_fit():
     """Verifica el ajuste correcto del modelo MCO de referencia y reporte de métricas."""
-    _, X, y, _ = prepare_econometric_data(DATA_PATH)
+    _, X, y, _ = prepare_econometric_data()
     model = fit_ols_reference(X, y)
     
     assert model.rsquared > 0.10, "El R^2 del modelo MCO es inferior al umbral mínimo esperado."
@@ -32,7 +35,7 @@ def test_ols_reference_fit():
 
 def test_gauss_markov_diagnostics():
     """Verifica que la auditoría de Gauss-Markov detecte heterocedasticidad y no normalidad."""
-    _, X, y, _ = prepare_econometric_data(DATA_PATH)
+    _, X, y, _ = prepare_econometric_data()
     model = fit_ols_reference(X, y)
     diagnostics = audit_gauss_markov(model)
     
@@ -48,7 +51,7 @@ def test_gauss_markov_diagnostics():
 
 def test_influential_points_and_cooks_distance():
     """Verifica el cálculo de residuos estudentizados, leverage y distancia de Cook."""
-    _, X, y, _ = prepare_econometric_data(DATA_PATH)
+    _, X, y, _ = prepare_econometric_data()
     model = fit_ols_reference(X, y)
     infl_dict = detect_influential_points(model, X)
     
@@ -60,7 +63,7 @@ def test_influential_points_and_cooks_distance():
 
 def test_vif_calculation():
     """Verifica el cálculo de Factores de Inflación de Varianza (VIF)."""
-    _, X, _, _ = prepare_econometric_data(DATA_PATH)
+    _, X, _, _ = prepare_econometric_data()
     df_vif = calculate_vif(X)
     
     assert len(df_vif) == X.shape[1]
@@ -74,17 +77,15 @@ def test_vif_calculation():
 
 def test_pca_no_data_leakage():
     """Verifica que PCA aplique la regla estricta: fit solo en Train y transformación en Test."""
-    _, X, _, _ = prepare_econometric_data(DATA_PATH)
-    pca_results = run_pca_no_leakage(X, test_size=0.2, random_state=42)
-    
-    # Verificar dimensiones
-    n_total = len(X)
-    n_train = int(n_total * 0.8)
-    n_test = n_total - n_train
-    
-    assert pca_results["X_train_pca"].shape[0] == n_train
-    assert pca_results["X_test_pca"].shape[0] == n_test
+    train_df, X, _, test_df = prepare_econometric_data()
+    pca_results = run_pca_no_leakage(train_df, test_df, list(X.columns))
+
+    # Dimensiones: componentes ajustadas en train y aplicadas a test
+    assert pca_results["X_train_pca"].shape[0] == len(train_df)
+    assert pca_results["X_test_pca"].shape[0] == len(test_df)
     assert pca_results["X_train_pca"].shape[1] == X.shape[1]
+    # El escalador se ajustó solo con train: su media coincide con la de train
+    assert np.allclose(pca_results["scaler"].mean_, X.mean().values)
     
     # Criterio de Kaiser: autovalores ordenados descendentemente
     eigenvalues = pca_results["eigenvalues"]
