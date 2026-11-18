@@ -82,13 +82,18 @@ def wilson(k, n, z=1.96):
 
 def estilo(fig, alto=380, leyenda=True):
     fig.update_layout(
-        height=alto, margin=dict(l=10, r=10, t=30, b=10), separators=",.",
+        height=alto, margin=dict(l=70, r=20, t=40, b=60), separators=",.",
         plot_bgcolor="white", paper_bgcolor="white", font=dict(color=TINTA, size=13),
         showlegend=leyenda, legend=dict(orientation="h", y=1.08, x=0),
         hoverlabel=dict(bgcolor="white", font_size=13),
     )
-    fig.update_xaxes(gridcolor="#eeeeea", zerolinecolor=GRIS_CLARO, linecolor=GRIS_CLARO)
-    fig.update_yaxes(gridcolor="#eeeeea", zerolinecolor=GRIS_CLARO, linecolor=GRIS_CLARO)
+    # Colores de texto explícitos: así las escalas se leen igual con el tema claro u oscuro del navegador
+    ejes = dict(gridcolor="#eeeeea", zerolinecolor=GRIS_CLARO, linecolor=GRIS_CLARO,
+                tickfont=dict(color=TINTA), title_font=dict(color=TINTA), automargin=True)
+    fig.update_xaxes(**ejes)
+    fig.update_yaxes(**ejes)
+    fig.update_layout(legend_font_color=TINTA)
+    fig.update_coloraxes(colorbar_tickfont_color=TINTA, colorbar_title_font_color=TINTA)
     return fig
 
 
@@ -265,7 +270,7 @@ with tab_diag:
                 fig.update_layout(barmode="overlay", bargap=0.05)
                 fig.update_xaxes(title=NOMBRES[var])
                 fig.update_yaxes(title="% de clientes de cada grupo")
-                st.plotly_chart(estilo(fig, 340), width="stretch")
+                st.plotly_chart(estilo(fig, 340), width="stretch", theme=None)
                 st.caption("Cada grupo suma 100 %. El eje se corta en el percentil 99 para que los extremos "
                            "no aplasten el gráfico.")
                 resumen = sel.groupby("Resultado")[var].describe()[["count", "mean", "50%", "std", "min", "max"]]
@@ -281,7 +286,7 @@ with tab_diag:
                 fig.add_vline(x=sel["BAD"].mean(), line_dash="dot", line_color=GRIS,
                               annotation_text="promedio", annotation_font_color=GRIS)
                 fig.update_xaxes(title="Tasa de default", tickformat=".0%", range=[0, max(tasa["mean"]) * 1.25])
-                st.plotly_chart(estilo(fig, 340, leyenda=False), width="stretch")
+                st.plotly_chart(estilo(fig, 340, leyenda=False), width="stretch", theme=None)
                 tabla = tasa.rename(columns={"mean": "Tasa de default", "size": "Clientes"})
                 tabla.index = etiquetas
                 st.dataframe(tabla.style.format({"Tasa de default": pct}), width="stretch")
@@ -305,7 +310,8 @@ with tab_diag:
                 fig.add_scattergl(x=sel["PC1"], y=sel["PC2"], mode="markers", customdata=sel[datos_hover],
                                   marker=dict(size=5, color=sel[color_por].clip(upper=tope), colorscale="Blues",
                                               cmin=float(sel[color_por].min()), cmax=float(tope), opacity=0.8,
-                                              colorbar=dict(title=color_por, thickness=12)),
+                                              colorbar=dict(title=dict(text=color_por, font=dict(color=TINTA)), thickness=12,
+                                                            tickfont=dict(color=TINTA))),
                                   hovertemplate=hover + "<extra></extra>", showlegend=False)
             else:
                 for (nombre, grupo), color in zip(sel.groupby(color_por, sort=True), (AZUL, NARANJA, VERDE)):
@@ -319,7 +325,7 @@ with tab_diag:
                                 hovertemplate="Cliente del simulador<br>PC1: %{x:.2f} · PC2: %{y:.2f}<extra></extra>")
             fig.update_xaxes(title=f"PC1 ({pct(var_exp[0])} de la varianza)", range=[-4, 8])
             fig.update_yaxes(title=f"PC2 ({pct(var_exp[1])} de la varianza)", range=[-4, 8])
-            st.plotly_chart(estilo(fig, 470), width="stretch")
+            st.plotly_chart(estilo(fig, 470), width="stretch", theme=None)
             st.caption(f"Las dos componentes juntas explican el {pct(var_exp[0] + var_exp[1])} de la varianza de "
                        "las 9 variables numéricas (sin el monto del préstamo). El escalado y las componentes se "
                        "ajustaron solo con train. La vista se limita al rango −4 a 8; algunos casos extremos quedan fuera.")
@@ -333,7 +339,7 @@ with tab_diag:
                                  orientation="h", marker_color=color,
                                  hovertemplate="%{y}<br>Carga en " + comp + ": %{x:.2f}<extra></extra>")
                 figc.update_xaxes(title="Carga (correlación de la variable con la componente)", range=[-1, 1])
-                st.plotly_chart(estilo(figc, 360), width="stretch")
+                st.plotly_chart(estilo(figc, 360), width="stretch", theme=None)
                 st.markdown(
                     "- **PC1** se mueve con la hipoteca adeudada, el valor de la propiedad y la cantidad de líneas "
                     "de crédito: resume el **tamaño patrimonial** del cliente.\n"
@@ -393,7 +399,7 @@ with tab_is:
         barra.add_vline(x=tasa_base, line_dash="dot", line_color=TINTA,
                         annotation_text=f"tasa base {pct(tasa_base, 0)}", annotation_position="top")
         barra.update_xaxes(range=[0, 1], tickformat=".0%")
-        st.plotly_chart(estilo(barra, 110, leyenda=False), width="stretch")
+        st.plotly_chart(estilo(barra, 110, leyenda=False), width="stretch", theme=None)
 
         # ---- probabilidad calibrada: qué pasó en test con clientes de probabilidad parecida
         p_test, y_test = predicciones_test()
@@ -444,7 +450,7 @@ with tab_is:
                          hovertemplate="%{y}<br>Cambio en la probabilidad: %{x:+.1%}<extra></extra>")
             margen = max(aporte.abs().max() * 1.35, 0.02)
             figx.update_xaxes(range=[-margen, margen], tickformat="+.0%", title="Cambio en la probabilidad de default")
-            st.plotly_chart(estilo(figx, 90 + 34 * len(aporte), leyenda=False), width="stretch")
+            st.plotly_chart(estilo(figx, 90 + 34 * len(aporte), leyenda=False), width="stretch", theme=None)
         st.caption("Cada barra muestra cuánto cambia la probabilidad por tener ese valor en lugar del valor típico "
                    "(la mediana de train, o la categoría más frecuente). Naranja: sube el riesgo. Azul: lo baja. "
                    "Se cambia una variable por vez, así que las barras no tienen por qué sumar la diferencia total.")
@@ -455,7 +461,7 @@ with tab_is:
             figi.add_bar(y=imp.index, x=imp.values, orientation="h", marker_color=AZUL,
                          hovertemplate="%{y}<br>Caída del AUC: %{x:.3f}<extra></extra>")
             figi.update_xaxes(title="Importancia por permutación (caída del AUC en test)")
-            st.plotly_chart(estilo(figi, 300, leyenda=False), width="stretch")
+            st.plotly_chart(estilo(figi, 300, leyenda=False), width="stretch", theme=None)
             st.caption("Esto mide asociación, no causa: que una variable prediga bien el default no quiere decir "
                        "que cambiarla lo reduzca. Esa pregunta la responde la pestaña What-If.")
 
@@ -592,7 +598,7 @@ with tab_if:
                             hovertemplate=f"<b>{n}</b><br>{rol}<br>{ayuda}<extra></extra>", showlegend=False)
         dag.update_xaxes(visible=False, range=[-0.8, 10.8])
         dag.update_yaxes(visible=False, range=[-1.9, 3.7])
-        st.plotly_chart(estilo(dag, 430, leyenda=False), width="stretch")
+        st.plotly_chart(estilo(dag, 430, leyenda=False), width="stretch", theme=None)
         st.caption("Pasá el mouse por cada nodo para ver su rol. Azul: tratamiento. Naranja: resultado. Verde: "
                    "mediador. Gris: confusores. Blanco: colisionador. El conjunto de ajuste backdoor son los "
                    f"{len(causal['dag_metadata']['backdoor_adjustment_set'])} confusores; el mediador LOAN queda afuera.")
@@ -642,7 +648,7 @@ with tab_if:
         figc.add_hline(y=ate_reg, line_dash="dot", line_color=GRIS, annotation_text="ATE", annotation_font_color=GRIS)
         figc.update_xaxes(title=NOMBRES[eje_x])
         figc.update_yaxes(title="Efecto sobre la prob. de default", tickformat="+.0%")
-        st.plotly_chart(estilo(figc, 340), width="stretch")
+        st.plotly_chart(estilo(figc, 340), width="stretch", theme=None)
 
         if ts0 < 0:
             st.success(f"Para este perfil, consolidar deuda **reduce** el default: {pp(t0)} "
@@ -697,7 +703,7 @@ with tab_if:
                           range=[-0.30, 0.20])
         hist.update_yaxes(title="Clientes")
         hist.update_layout(bargap=0.05)
-        st.plotly_chart(estilo(hist, 300, leyenda=False), width="stretch")
+        st.plotly_chart(estilo(hist, 300, leyenda=False), width="stretch", theme=None)
         st.caption(
             f"A la izquierda del cero, la política baja el default. El promedio del bosque causal en toda la muestra "
             f"({pp(tau_tr.mean())}) es más chico que el ATE de la regresión ({pp(ate_reg)}): son dos métodos "
